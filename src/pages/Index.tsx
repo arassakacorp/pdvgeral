@@ -1,6 +1,6 @@
 import { useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { TrendingUp, DollarSign, Package, Percent, Sparkles, Plus, Upload, Download, LogOut, Loader2 } from "lucide-react";
+import { TrendingUp, DollarSign, Package, Percent, Sparkles, Plus, Upload, Download, LogOut, Loader2, Shield } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { CategoryChart } from "@/components/CategoryChart";
 import { TopProductsChart } from "@/components/TopProductsChart";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { fmtBRL, fmtPct, fmtInt } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import { useProdutos, useDeleteProduto, useBulkInsertProdutos, ProdutoDB } from "@/hooks/useProdutos";
+import { useIsAdmin, useCreatorsMap } from "@/hooks/useAdmin";
 import { exportToXLSX, parseXLSX } from "@/lib/xlsx";
 import { toast } from "sonner";
 
@@ -20,6 +21,8 @@ const Index = () => {
   const { data: produtos = [], isLoading } = useProdutos();
   const del = useDeleteProduto();
   const bulk = useBulkInsertProdutos();
+  const { data: isAdmin } = useIsAdmin();
+  const { data: creators = {} } = useCreatorsMap();
 
   const [category, setCategory] = useState("Todas");
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -95,6 +98,11 @@ const Index = () => {
           </div>
           <div className="flex items-center gap-2">
             <input ref={fileRef} type="file" accept=".xlsx,.xls" hidden onChange={handleImport} />
+            {isAdmin && (
+              <Button variant="outline" size="sm" onClick={() => nav("/admin")}>
+                <Shield className="mr-2 h-4 w-4" /> Admin
+              </Button>
+            )}
             <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={bulk.isPending}>
               <Upload className="mr-2 h-4 w-4" /> Importar
             </Button>
@@ -146,7 +154,7 @@ const Index = () => {
               <div className="lg:col-span-2"><CategoryChart data={byCategory} /></div>
             </section>
             <section>
-              <ProductsTable data={filtered} onEdit={onEdit} onDelete={(id) => del.mutate(id)} />
+              <ProductsTable data={filtered} onEdit={onEdit} onDelete={(id) => del.mutate(id)} creators={creators} />
             </section>
           </>
         )}
