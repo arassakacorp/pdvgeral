@@ -13,12 +13,13 @@ import {
 type SortKey = "nome" | "venda_total" | "lucro" | "qntd_vendida";
 
 interface Props {
-  data: ProdutoDB[];
+  data: (ProdutoDB & { created_by?: string | null })[];
   onEdit: (p: ProdutoDB) => void;
   onDelete: (id: string) => void;
+  creators?: Record<string, string>;
 }
 
-export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
+export const ProductsTable = ({ data, onEdit, onDelete, creators = {} }: Props) => {
   const [q, setQ] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("lucro");
   const [asc, setAsc] = useState(false);
@@ -59,6 +60,7 @@ export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
             <thead className="bg-muted/50 text-left text-xs uppercase tracking-wide text-muted-foreground">
               <tr>
                 <Th onClick={() => toggle("nome")}>Produto</Th>
+                <Th>Criado por</Th>
                 <Th className="text-right" onClick={() => toggle("qntd_vendida")}>Vendidos</Th>
                 <Th className="text-right">Custo</Th>
                 <Th className="text-right">Preço</Th>
@@ -73,6 +75,9 @@ export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
                   <td className="px-4 py-3">
                     <div className="font-medium">{p.nome}</div>
                     <div className="text-xs text-muted-foreground">{p.categoria}</div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">
+                    {p.created_by ? (creators[p.created_by] ?? "—") : <span className="italic">sem dono</span>}
                   </td>
                   <td className="px-4 py-3 text-right tabular-nums">{fmtInt(p.qntd_vendida)}</td>
                   <td className="px-4 py-3 text-right tabular-nums text-muted-foreground">{fmtBRL(Number(p.custo_unit))}</td>
@@ -94,7 +99,7 @@ export const ProductsTable = ({ data, onEdit, onDelete }: Props) => {
                 </tr>
               ))}
               {rows.length === 0 && (
-                <tr><td colSpan={7} className="py-12 text-center text-muted-foreground">Nenhum produto encontrado</td></tr>
+                <tr><td colSpan={8} className="py-12 text-center text-muted-foreground">Nenhum produto encontrado</td></tr>
               )}
             </tbody>
           </table>
