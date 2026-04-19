@@ -14,7 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      produtos: {
+        Row: {
+          categoria: string
+          created_at: string
+          created_by: string | null
+          custo_total: number | null
+          custo_unit: number
+          id: string
+          lucro: number | null
+          nome: string
+          qntd_comprada: number
+          qntd_vendida: number
+          updated_at: string
+          valor_venda: number
+          venda_total: number | null
+        }
+        Insert: {
+          categoria?: string
+          created_at?: string
+          created_by?: string | null
+          custo_total?: number | null
+          custo_unit?: number
+          id?: string
+          lucro?: number | null
+          nome: string
+          qntd_comprada?: number
+          qntd_vendida?: number
+          updated_at?: string
+          valor_venda?: number
+          venda_total?: number | null
+        }
+        Update: {
+          categoria?: string
+          created_at?: string
+          created_by?: string | null
+          custo_total?: number | null
+          custo_unit?: number
+          id?: string
+          lucro?: number | null
+          nome?: string
+          qntd_comprada?: number
+          qntd_vendida?: number
+          updated_at?: string
+          valor_venda?: number
+          venda_total?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
