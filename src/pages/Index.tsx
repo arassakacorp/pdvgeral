@@ -26,16 +26,14 @@ const Index = () => {
   const [editing, setEditing] = useState<ProdutoDB | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  if (authLoading) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  }
-  if (!user) {
-    nav("/auth", { replace: true });
-    return null;
-  }
-
-  const categories = Array.from(new Set(produtos.map((p) => p.categoria))).sort();
-  const filtered = category === "Todas" ? produtos : produtos.filter((p) => p.categoria === category);
+  const categories = useMemo(
+    () => Array.from(new Set(produtos.map((p) => p.categoria))).sort(),
+    [produtos]
+  );
+  const filtered = useMemo(
+    () => (category === "Todas" ? produtos : produtos.filter((p) => p.categoria === category)),
+    [produtos, category]
+  );
 
   const stats = useMemo(() => {
     const receita = filtered.reduce((s, p) => s + Number(p.venda_total), 0);
@@ -56,6 +54,14 @@ const Index = () => {
     () => [...filtered].sort((a, b) => Number(b.lucro) - Number(a.lucro)).slice(0, 10).map((p) => ({ nome: p.nome, lucro: Number(p.lucro) })),
     [filtered]
   );
+
+  if (authLoading) {
+    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+  if (!user) {
+    nav("/auth", { replace: true });
+    return null;
+  }
 
   const onNew = () => { setEditing(null); setDialogOpen(true); };
   const onEdit = (p: ProdutoDB) => { setEditing(p); setDialogOpen(true); };
