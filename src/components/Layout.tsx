@@ -27,12 +27,15 @@ const Layout = ({ children }: LayoutProps) => {
   const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const [isOpen, setIsOpen] = useState(true);
 
-  // Páginas que exigem Admin
-  const adminRoutes = ["/", "/pedidos", "/produtos", "/admin"];
-  const isTargetingAdmin = adminRoutes.includes(pathname);
+  const isPublicPath = pathname === "/cardapio" || pathname.startsWith("/acompanhar") || pathname === "/";
+
+  // Se for uma página pública, não aplica nada do layout administrativo
+  if (isPublicPath) {
+    return <>{children}</>;
+  }
 
   // Se estiver carregando auth ou admin check nas rotas sensíveis
-  if (isTargetingAdmin && (authLoading || adminLoading)) {
+  if (authLoading || adminLoading) {
     return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
   }
 
