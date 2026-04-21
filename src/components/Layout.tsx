@@ -49,7 +49,7 @@ const Layout = ({ children }: LayoutProps) => {
   */
 
   const menuItems = [
-    { name: "Dashboard", path: "/", icon: LayoutDashboard },
+    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
     { name: "Pedidos", path: "/pedidos", icon: ShoppingBag },
     { name: "Produtos", path: "/produtos", icon: Package },
   ];

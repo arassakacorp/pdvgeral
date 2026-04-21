@@ -1,166 +1,189 @@
-import { useMemo, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import { TrendingUp, DollarSign, Package, Percent, Sparkles, Plus, Upload, Download, LogOut, Loader2, Shield } from "lucide-react";
-import { StatCard } from "@/components/StatCard";
-import { CategoryChart } from "@/components/CategoryChart";
-import { TopProductsChart } from "@/components/TopProductsChart";
-import { ProductsTable } from "@/components/ProductsTable";
-import { CategoryFilter } from "@/components/CategoryFilter";
-import { ProdutoDialog } from "@/components/ProdutoDialog";
 import { Button } from "@/components/ui/button";
-import { fmtBRL, fmtPct, fmtInt } from "@/lib/format";
-import { useAuth } from "@/hooks/useAuth";
-import { useProdutos, useDeleteProduto, useBulkInsertProdutos, ProdutoDB } from "@/hooks/useProdutos";
-import { useIsAdmin, useCreatorsMap } from "@/hooks/useAdmin";
-import { exportToXLSX, parseXLSX } from "@/lib/xlsx";
-import { toast } from "sonner";
+import { 
+  ArrowRight, 
+  Clock, 
+  MapPin, 
+  Instagram, 
+  Facebook, 
+  Phone, 
+  Utensils, 
+  Truck, 
+  Star,
+  ChevronDown
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
-  const nav = useNavigate();
-  const { user, loading: authLoading, signOut } = useAuth();
-  const { data: produtos = [], isLoading } = useProdutos();
-  const del = useDeleteProduto();
-  const bulk = useBulkInsertProdutos();
-  const { data: isAdmin } = useIsAdmin();
-  const { data: creators = {} } = useCreatorsMap();
-
-  const [category, setCategory] = useState("Todas");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editing, setEditing] = useState<ProdutoDB | null>(null);
-  const fileRef = useRef<HTMLInputElement>(null);
-
-  const categories = useMemo(
-    () => Array.from(new Set(produtos.map((p) => p.categoria))).sort(),
-    [produtos]
-  );
-  const filtered = useMemo(
-    () => (category === "Todas" ? produtos : produtos.filter((p) => p.categoria === category)),
-    [produtos, category]
-  );
-
-  const stats = useMemo(() => {
-    const receita = filtered.reduce((s, p) => s + Number(p.venda_total), 0);
-    const custo = filtered.reduce((s, p) => s + Number(p.custo_total), 0);
-    const lucro = filtered.reduce((s, p) => s + Number(p.lucro), 0);
-    const unidades = filtered.reduce((s, p) => s + p.qntd_vendida, 0);
-    const margem = receita > 0 ? lucro / receita : 0;
-    return { receita, custo, lucro, unidades, margem };
-  }, [filtered]);
-
-  const byCategory = useMemo(() => {
-    const map = new Map<string, number>();
-    produtos.forEach((p) => map.set(p.categoria, (map.get(p.categoria) ?? 0) + Number(p.venda_total)));
-    return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
-  }, [produtos]);
-
-  const topProducts = useMemo(
-    () => [...filtered].sort((a, b) => Number(b.lucro) - Number(a.lucro)).slice(0, 10).map((p) => ({ nome: p.nome, lucro: Number(p.lucro) })),
-    [filtered]
-  );
-
-  if (authLoading) {
-    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
-  }
-  if (!user) {
-    nav("/auth", { replace: true });
-    return null;
-  }
-
-  const onNew = () => { setEditing(null); setDialogOpen(true); };
-  const onEdit = (p: ProdutoDB) => { setEditing(p); setDialogOpen(true); };
-
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    try {
-      const rows = await parseXLSX(file);
-      if (rows.length === 0) { toast.error("Nenhum produto encontrado no arquivo"); return; }
-      await bulk.mutateAsync(rows);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Erro ao importar");
-    } finally {
-      e.target.value = "";
-    }
-  };
-
   return (
-    <div className="min-h-screen">
-      <main className="container space-y-8 py-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black font-sans">
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div className="container mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-3">
-             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary shadow-glow md:hidden">
-                <Sparkles className="h-6 w-6 text-primary-foreground" />
-             </div>
-             <div>
-                <h1 className="text-2xl font-bold tracking-tight">Dashboard de Vendas</h1>
-                <p className="text-sm text-muted-foreground">Bem-vindo, {user.email}</p>
-             </div>
+            <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-glow">
+              <span className="text-black font-black text-2xl rotate-3">N</span>
+            </div>
+            <span className="font-black text-2xl tracking-tighter uppercase italic">
+              Nano <span className="text-primary">Banana</span>
+            </span>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <input ref={fileRef} type="file" accept=".xlsx,.xls" hidden onChange={handleImport} />
-            <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={bulk.isPending}>
-              <Upload className="mr-2 h-4 w-4" /> Importar
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => exportToXLSX(produtos)} disabled={produtos.length === 0}>
-              <Download className="mr-2 h-4 w-4" /> Exportar
-            </Button>
-            <Button size="sm" onClick={onNew} className="bg-gradient-primary shadow-md">
-              <Plus className="mr-2 h-4 w-4" /> Novo Lanche
-            </Button>
+          <div className="hidden md:flex items-center gap-8 text-sm font-bold uppercase tracking-widest text-white/70">
+            <a href="#home" className="hover:text-primary transition-colors">Início</a>
+            <a href="#menu" className="hover:text-primary transition-colors">Cardápio</a>
+            <a href="#sobre" className="hover:text-primary transition-colors">Sobre</a>
+            <Link to="/auth" className="hover:text-primary transition-colors">Admin</Link>
           </div>
+          <Link to="/cardapio">
+            <Button className="rounded-full px-8 font-black uppercase tracking-tighter shadow-glow hover:scale-105 transition-all">
+              Peça Agora
+            </Button>
+          </Link>
         </div>
-        <section className="space-y-4">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight">Visão geral</h2>
-            <p className="text-sm text-muted-foreground">Filtre por categoria para detalhar os indicadores</p>
-          </div>
-          <CategoryFilter categories={categories} active={category} onChange={setCategory} />
-        </section>
+      </nav>
 
-        <section className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Receita Total" value={fmtBRL(stats.receita)} hint={`${fmtInt(stats.unidades)} unidades vendidas`} icon={DollarSign} variant="primary" />
-          <StatCard label="Lucro Líquido" value={fmtBRL(stats.lucro)} hint={`Custo: ${fmtBRL(stats.custo)}`} icon={TrendingUp} variant="success" />
-          <StatCard label="Margem de Lucro" value={fmtPct(stats.margem)} hint="Lucro / Receita" icon={Percent} variant="accent" />
-          <StatCard label="Produtos Ativos" value={fmtInt(filtered.length)} hint={category === "Todas" ? "Todas as categorias" : category} icon={Package} variant="warning" />
-        </section>
+      {/* Hero Section */}
+      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="/premium_burger_hero_1776746871020.png" 
+            alt="Background" 
+            className="w-full h-full object-cover opacity-40 scale-110 blur-sm"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+        </div>
 
-        {isLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
-        ) : produtos.length === 0 ? (
-          <div className="rounded-2xl bg-card p-12 text-center shadow-soft">
-            <Package className="mx-auto mb-4 h-12 w-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">Nenhum produto ainda</h3>
-            <p className="mb-6 text-sm text-muted-foreground">Adicione seu primeiro produto ou importe uma planilha.</p>
-            <div className="flex justify-center gap-2">
-              <Button onClick={onNew} className="bg-gradient-primary"><Plus className="mr-2 h-4 w-4" /> Novo produto</Button>
-              <Button variant="outline" onClick={() => fileRef.current?.click()}><Upload className="mr-2 h-4 w-4" /> Importar planilha</Button>
+        <div className="container mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-12 items-center">
+          <div className="space-y-8 animate-fade-in">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+              <Star className="h-4 w-4 text-primary fill-primary" />
+              <span className="text-xs font-black uppercase tracking-widest">O Melhor da Região</span>
+            </div>
+            <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.9] tracking-tighter">
+              Sabor <br />
+              <span className="text-primary">Artesanal</span> <br />
+              Elevado
+            </h1>
+            <p className="text-lg text-white/60 max-w-md leading-relaxed">
+              Hambúrgueres feitos na brasa, com blends secretos e a nossa exclusiva Banana Caramelizada que vai explodir sua mente.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link to="/cardapio">
+                <Button size="lg" className="h-16 px-10 rounded-2xl text-xl font-black uppercase tracking-tighter group">
+                  Ver Cardápio <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <div className="flex items-center gap-4 px-6 border-l border-white/20">
+                <div className="text-primary">
+                  <Clock className="h-8 w-8" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-white/40 tracking-widest">Aberto Hoje até</p>
+                  <p className="font-black text-xl italic tracking-tighter">23:30h</p>
+                </div>
+              </div>
             </div>
           </div>
-        ) : (
-          <>
-            <section className="grid gap-6 lg:grid-cols-5">
-              <div className="lg:col-span-3"><TopProductsChart data={topProducts} /></div>
-              <div className="lg:col-span-2"><CategoryChart data={byCategory} /></div>
-            </section>
-            
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold tracking-tight">Seus Lanches</h2>
-                <Button onClick={onNew} size="sm" className="bg-gradient-primary shadow-md">
-                   <Plus className="mr-2 h-4 w-4" /> Novo Lanche
+
+          <div className="relative group perspective-1000 hidden md:block">
+            <div className="relative z-10 transition-transform duration-500 group-hover:rotate-3 group-hover:scale-105">
+               <img 
+                src="/nano_banana_burger_special_1776776797511.png" 
+                alt="Signature Burger" 
+                className="rounded-[3rem] shadow-glow-lg border-4 border-primary/20"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-primary text-black p-6 rounded-3xl shadow-glow rotate-12 group-hover:rotate-0 transition-all">
+                 <p className="font-black text-3xl italic leading-none uppercase">R$ 38,90</p>
+                 <p className="text-[10px] font-bold uppercase tracking-widest">Nano Especial</p>
+              </div>
+            </div>
+            <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse" />
+          </div>
+        </div>
+
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="h-8 w-8 text-white/20" />
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="py-24 bg-white/[0.02] border-y border-white/5">
+        <div className="container mx-auto px-6 grid md:grid-cols-3 gap-12 text-center">
+          <div className="space-y-4">
+            <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary">
+              <Utensils className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-black italic uppercase tracking-tighter">Carne 100% Angus</h3>
+            <p className="text-white/40 text-sm leading-relaxed px-4">
+              Selecionamos os melhores cortes para garantir suculência e sabor em cada mordida.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary">
+              <Truck className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-black italic uppercase tracking-tighter">Entrega Ninja</h3>
+            <p className="text-white/40 text-sm leading-relaxed px-4">
+              Seu hambúrguer chega quentinho e montado, como se tivesse acabado de sair da chapa.
+            </p>
+          </div>
+          <div className="space-y-4">
+            <div className="h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto text-primary">
+              <Star className="h-10 w-10" />
+            </div>
+            <h3 className="text-2xl font-black italic uppercase tracking-tighter">Receita Secreta</h3>
+            <p className="text-white/40 text-sm leading-relaxed px-4">
+              Nosso molho especial e a banana caramelizada são o que nos torna únicos.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-20 bg-black border-t border-white/5">
+        <div className="container mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-12 mb-12">
+            <div className="col-span-2 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-8 bg-primary rounded-lg flex items-center justify-center">
+                  <span className="text-black font-black text-xl italic leading-none">N</span>
+                </div>
+                <span className="font-black text-2xl tracking-tighter uppercase italic">
+                  Nano <span className="text-primary">Banana</span>
+                </span>
+              </div>
+              <p className="text-white/40 max-w-sm leading-relaxed">
+                Mais do que uma hamburgueria, uma experiência gastronômica feita para quem não se contenta com o básico.
+              </p>
+              <div className="flex gap-4">
+                <Button variant="ghost" size="icon" className="rounded-xl border border-white/10 hover:bg-white/5">
+                  <Instagram className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="rounded-xl border border-white/10 hover:bg-white/5">
+                  <Facebook className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="rounded-xl border border-white/10 hover:bg-white/5">
+                  <Phone className="h-5 w-5" />
                 </Button>
               </div>
-              <ProductsTable data={filtered} onEdit={onEdit} onDelete={(id) => del.mutate(id)} creators={creators} />
-            </section>
-          </>
-        )}
-
-        <footer className="pt-4 pb-8 text-center text-xs text-muted-foreground">
-          Catálogo compartilhado · sincronizado em tempo real
-        </footer>
-      </main>
-
-      <ProdutoDialog open={dialogOpen} onOpenChange={setDialogOpen} produto={editing} categorias={categories} />
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-black uppercase tracking-widest text-xs text-primary">Localização</h4>
+              <p className="text-white/60 text-sm flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-primary" /> Rua dos Burgers, 123 - Centro
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h4 className="font-black uppercase tracking-widest text-xs text-primary">Contato</h4>
+              <p className="text-white/60 text-sm flex items-center gap-2">
+                <Phone className="h-4 w-4 text-primary" /> (33) 99879-7876
+              </p>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-white/5 text-center text-white/20 text-xs font-bold uppercase tracking-widest">
+            © 2026 Nano Banana Burger. Todos os direitos reservados.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
