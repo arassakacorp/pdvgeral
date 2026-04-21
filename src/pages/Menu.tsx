@@ -141,11 +141,11 @@ const Menu = () => {
   return (
     <div className="min-h-screen bg-[#f8f9fa] font-sans antialiased text-[#3e3e3e]">
       {/* Topo Estilo Asgard */}
-      <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
+      <header className="sticky top-0 z-50 glass-premium">
         <div className="container max-w-6xl mx-auto px-4 h-20 flex items-center gap-8">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 flex items-center gap-2">
-            <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+            <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-glow rotate-3">
               <span className="text-white font-black text-xl italic leading-none">N</span>
             </div>
             <span className="font-black text-xl tracking-tighter uppercase italic hidden sm:block">
@@ -155,10 +155,10 @@ const Menu = () => {
 
           {/* Busca Centralizada */}
           <div className="flex-1 relative group max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-all duration-300" />
             <Input 
               placeholder="O que você quer comer hoje?" 
-              className="w-full h-12 pl-12 pr-4 rounded-xl bg-[#f2f2f2] border-none focus-visible:ring-2 focus-visible:ring-primary shadow-inner transition-all"
+              className="w-full h-12 pl-12 pr-4 rounded-2xl bg-slate-100/50 border-none focus-visible:ring-2 focus-visible:ring-primary shadow-inner transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -172,21 +172,21 @@ const Menu = () => {
                 <MapPin className="h-4 w-4" /> Centro, Cidade
               </span>
             </div>
-            <div className="h-10 w-[1px] bg-border" />
-            <Button variant="ghost" className="font-bold hover:text-primary">Entrar</Button>
+            <div className="h-10 w-[1px] bg-border/50" />
+            <Button variant="ghost" className="font-black uppercase tracking-tighter hover:text-primary transition-all">Entrar</Button>
           </div>
         </div>
       </header>
 
       <div className="container max-w-6xl mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-12">
           {/* Sidebar de Categorias (Desktop) */}
-          <aside className="hidden lg:block w-64 space-y-2 sticky top-28 h-fit">
-            <h4 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Categorias</h4>
+          <aside className="hidden lg:block w-64 space-y-3 sticky top-32 h-fit">
+            <h4 className="px-4 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-6">Categorias</h4>
             {["Burgers", "Combos", "Acompanhamentos", "Bebidas", "Sobremesas"].map((cat) => (
               <button 
                 key={cat}
-                className="w-full text-left px-4 py-3 rounded-xl font-bold text-sm hover:bg-white hover:text-primary hover:shadow-sm transition-all border border-transparent hover:border-border"
+                className="w-full text-left px-5 py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-primary hover:text-white hover:shadow-glow transition-all duration-300 border border-transparent"
               >
                 {cat}
               </button>
@@ -194,60 +194,66 @@ const Menu = () => {
           </aside>
 
           {/* Conteúdo Principal */}
-          <main className="flex-1 space-y-12 pb-20">
+          <main className="flex-1 space-y-16 pb-32">
             {/* Banner Promocional */}
-            <div className="relative h-48 md:h-64 rounded-[2rem] overflow-hidden shadow-elegant group">
+            <div className="relative h-56 md:h-72 rounded-[3rem] overflow-hidden shadow-elegant-lg group border-4 border-white/50">
                <img 
                 src="/premium_burger_hero_1776746871020.png" 
                 alt="Promo" 
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-12 text-white">
-                 <Badge className="w-fit mb-4 bg-primary text-white border-none font-black italic tracking-tighter uppercase">Promoção do Dia</Badge>
-                 <h2 className="text-3xl md:text-5xl font-black italic uppercase leading-none tracking-tighter">Compre 1 <br />Leve <span className="text-primary">2</span></h2>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/30 to-transparent flex flex-col justify-center px-12 text-white">
+                 <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary rounded-full w-fit mb-4">
+                    <Star className="h-3 w-3 fill-white" />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Oferta de Elite</span>
+                 </div>
+                 <h2 className="text-4xl md:text-6xl font-black italic uppercase leading-none tracking-tighter">Sabor <br /><span className="text-primary stroke-text-white">Imponente</span></h2>
               </div>
             </div>
 
             {/* Listagem por Categoria */}
-            <section className="space-y-6">
-               <div className="flex items-center justify-between border-b pb-4">
-                  <h3 className="text-2xl font-black italic uppercase tracking-tighter">Burgers <span className="text-primary">Artesanais</span></h3>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{filteredProdutos.length} itens</span>
+            <section className="space-y-8">
+               <div className="flex items-center justify-between border-b-2 border-slate-200 pb-6">
+                  <h3 className="text-3xl font-black italic uppercase tracking-tighter">Favoritos <span className="text-primary underline decoration-4 underline-offset-8">Artesanais</span></h3>
+                  <div className="flex items-center gap-2">
+                    <Utensils className="h-5 w-5 text-primary" />
+                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">{filteredProdutos.length} opções</span>
+                  </div>
                </div>
                
-               <div className="grid gap-4">
+               <div className="grid gap-6">
                   {filteredProdutos.map((p) => (
                     <div 
                       key={p.id} 
-                      className="bg-white p-4 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-elegant transition-all duration-300 flex items-center gap-6 cursor-pointer group"
+                      className="bg-white p-6 rounded-[2.5rem] border-2 border-transparent hover:border-primary/30 hover:shadow-elegant-lg transition-all duration-500 flex items-center gap-8 cursor-pointer group relative overflow-hidden"
                       onClick={() => addToCart(p)}
                     >
-                      <div className="flex-1 space-y-2">
+                      <div className="flex-1 space-y-4">
                         <div>
-                          <h4 className="font-black text-xl text-[#3e3e3e] uppercase tracking-tighter group-hover:text-primary transition-colors leading-none">{p.nome}</h4>
-                          <p className="text-sm text-muted-foreground mt-2 font-medium line-clamp-2 leading-relaxed">{p.categoria}</p>
+                          <h4 className="font-black text-2xl text-[#1a1a1a] uppercase tracking-tighter group-hover:text-primary transition-colors leading-none">{p.nome}</h4>
+                          <p className="text-sm text-muted-foreground mt-3 font-medium line-clamp-2 leading-relaxed opacity-70">{p.categoria}</p>
                         </div>
-                        <div className="flex items-center gap-4 pt-2">
-                          <span className="text-2xl font-black text-primary tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
-                          {Number(p.valor_venda) < 25 && (
-                             <Badge variant="outline" className="text-[10px] border-primary text-primary font-bold uppercase tracking-widest">Econômico</Badge>
+                        <div className="flex items-center gap-4">
+                          <span className="text-3xl font-black text-primary tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
+                          {Number(p.valor_venda) > 35 && (
+                             <Badge className="bg-accent text-black font-black uppercase tracking-widest text-[9px] px-3">Premium</Badge>
                           )}
                         </div>
                       </div>
-                      <div className="relative h-32 w-32 md:h-40 md:w-40 flex-shrink-0">
+                      <div className="relative h-40 w-40 md:h-48 md:w-48 flex-shrink-0">
                         {p.imagem_url ? (
                           <img 
                             src={p.imagem_url} 
                             alt={p.nome} 
-                            className="h-full w-full object-cover rounded-2xl shadow-sm group-hover:scale-105 transition-transform" 
+                            className="h-full w-full object-cover rounded-[2rem] shadow-elegant group-hover:scale-105 transition-transform duration-700" 
                           />
                         ) : (
-                          <div className="h-full w-full bg-[#f2f2f2] rounded-2xl flex items-center justify-center text-muted-foreground border border-dashed">
-                            <ShoppingBag className="opacity-20 h-10 w-10" />
+                          <div className="h-full w-full bg-slate-50 rounded-[2rem] flex items-center justify-center text-muted-foreground border-2 border-dashed border-slate-200">
+                            <ShoppingBag className="opacity-10 h-12 w-12" />
                           </div>
                         )}
-                        <div className="absolute bottom-2 right-2 h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-glow transform transition-all hover:scale-110 active:scale-95 group-hover:rotate-12">
-                          <Plus className="h-6 w-6 font-bold" />
+                        <div className="absolute -bottom-2 -right-2 h-14 w-14 bg-primary text-white rounded-2xl flex items-center justify-center shadow-glow transform transition-all group-hover:scale-110 active:scale-95 group-hover:rotate-12">
+                          <Plus className="h-8 w-8 font-bold" />
                         </div>
                       </div>
                     </div>
@@ -258,30 +264,34 @@ const Menu = () => {
         </div>
       </div>
 
-      {/* Carrinho Flutuante (Fiel ao Asgard/iFood) */}
+      {/* Carrinho Flutuante (Design Expert Evolution) */}
       {cart.length > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-500">
-          <div className="container max-w-6xl mx-auto flex items-center justify-between">
-             <div className="hidden md:flex items-center gap-6">
-                <div className="flex -space-x-2">
-                   {cart.slice(0, 3).map((item, i) => (
-                      <div key={i} className="h-10 w-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
-                         <ShoppingBag className="h-4 w-4 text-slate-400" />
+        <div className="fixed bottom-0 left-0 right-0 z-50 p-6 animate-in slide-in-from-bottom-full duration-700">
+          <div className="container max-w-6xl mx-auto">
+             <div className="glass-premium rounded-[2.5rem] p-4 flex items-center justify-between shadow-glow-lg border-2 border-primary/20">
+                <div className="hidden md:flex items-center gap-8 pl-6">
+                   <div className="relative h-14 w-14 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-primary rounded-2xl pulse-primary" />
+                      <ShoppingBag className="h-7 w-7 text-white relative z-10" />
+                      <div className="absolute -top-2 -right-2 h-6 w-6 bg-accent text-black rounded-full flex items-center justify-center text-[10px] font-black shadow-lg">
+                        {cart.length}
                       </div>
-                   ))}
+                   </div>
+                   <div className="space-y-0.5">
+                      <p className="font-black text-lg uppercase tracking-tighter italic">Seu Carrinho</p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Prepare-se para o melhor lanche da sua vida</p>
+                   </div>
                 </div>
-                <div className="space-y-0.5">
-                   <p className="font-bold text-sm">{cart.length} itens no carrinho</p>
-                   <p className="text-xs text-muted-foreground">Adicione mais itens para entrega grátis</p>
-                </div>
+                <Button 
+                   className="w-full md:w-fit h-20 px-16 rounded-[2rem] bg-primary hover:bg-primary/90 text-white shadow-glow flex items-center justify-between md:justify-center gap-12 active:scale-95 transition-all group"
+                   onClick={() => setCheckoutOpen(true)}
+                >
+                   <span className="font-black text-2xl uppercase tracking-tighter italic flex items-center gap-3">
+                      Finalizar <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
+                   </span>
+                   <span className="text-3xl font-black tracking-tighter border-l-2 border-white/20 pl-10">{fmtBRL(cartTotal)}</span>
+                </Button>
              </div>
-             <Button 
-                className="w-full md:w-fit h-14 px-12 rounded-xl bg-primary hover:bg-primary/90 text-white shadow-glow flex items-center justify-between md:justify-center gap-8 group"
-                onClick={() => setCheckoutOpen(true)}
-             >
-                <span className="font-black text-xl uppercase tracking-tighter italic">Fechar Pedido</span>
-                <span className="text-2xl font-black tracking-tighter border-l border-white/20 pl-6">{fmtBRL(cartTotal)}</span>
-             </Button>
           </div>
         </div>
       )}
