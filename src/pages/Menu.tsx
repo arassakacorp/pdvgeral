@@ -125,9 +125,7 @@ const Menu = () => {
       // Abrir WhatsApp após um pequeno delay para o usuário ver o sucesso
       setTimeout(() => {
         window.open(whatsappUrl, '_blank');
-        setCart([]);
-        setCheckoutOpen(false);
-        setCustomer({ nome: "", telefone: "", endereco: "" });
+        window.location.href = `/acompanhar/${pedido.id}`;
       }, 1500);
 
     } catch (error) {

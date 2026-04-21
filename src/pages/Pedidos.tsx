@@ -2,7 +2,7 @@ import { usePedidos, useUpdatePedidoStatus, Pedido } from "@/hooks/usePedidos";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin } from "lucide-react";
+import { Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin, MessageSquare } from "lucide-react";
 import { fmtBRL } from "@/lib/format";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -27,6 +27,19 @@ const Pedidos = () => {
     else if (currentStatus === "Pronto") nextStatus = "Finalizado";
     
     updateStatus.mutate({ id, status: nextStatus });
+  };
+
+  const notifyCustomer = (pedido: Pedido) => {
+    let msg = "";
+    if (pedido.status === "Pendente") msg = `Olá ${pedido.cliente_nome}! Seu pedido #${pedido.id.slice(0, 5)} foi recebido e já vai entrar em produção! 🍔`;
+    else if (pedido.status === "Preparando") msg = `Olá ${pedido.cliente_nome}! Seu pedido já está sendo preparado com muito carinho! 👨‍🍳`;
+    else if (pedido.status === "Pronto") msg = `Boa notícia ${pedido.cliente_nome}! Seu pedido está PRONTO e logo chegará até você! 🛵💨`;
+    
+    if (pedido.cliente_telefone) {
+      const phone = pedido.cliente_telefone.replace(/\D/g, '');
+      const url = `https://wa.me/55${phone}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
   };
 
   if (isLoading) {
@@ -60,6 +73,15 @@ const Pedidos = () => {
                   <div className="flex items-center gap-2">
                     <ShoppingBag className="h-4 w-4 text-primary" />
                     <span className="font-bold">#{pedido.id.slice(0, 5)}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-50"
+                      onClick={() => notifyCustomer(pedido)}
+                      title="Notificar via WhatsApp"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                    </Button>
                   </div>
                   <Badge className={getStatusColor(pedido.status)}>
                     {pedido.status}
