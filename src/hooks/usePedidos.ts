@@ -21,6 +21,8 @@ export interface Pedido {
   cliente_endereco: string;
   total: number;
   status: string;
+  metodo_pagamento: string;
+  tipo_entrega: string;
   created_at: string;
   itens_pedido?: PedidoItem[];
 }
@@ -34,9 +36,19 @@ export const usePedidos = () => {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'pedidos' },
-        () => {
+        (payload) => {
           qc.invalidateQueries({ queryKey: ["pedidos"] });
-          // Toca um som opcional se for um novo pedido
+          
+          if (payload.eventType === 'INSERT') {
+            const audio = new Audio("https://cdn.pixabay.com/download/audio/2021/08/04/audio_0625c1539c.mp3?filename=service-bell-ring-14610.mp3");
+            audio.play().catch(e => console.error("Erro ao tocar áudio:", e));
+            
+            toast.success("🚨 NOVO PEDIDO NA COZINHA!", {
+              duration: 8000,
+              position: "top-center",
+              className: "bg-primary text-black font-black text-lg border-4 border-black animate-pulse"
+            });
+          }
         }
       )
       .subscribe();

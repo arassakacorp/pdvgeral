@@ -41,6 +41,9 @@ const Menu = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tipoEntrega, setTipoEntrega] = useState<"Retirada" | "Delivery">("Delivery");
+  const [metodoPagamento, setMetodoPagamento] = useState<"Pix" | "Cartão" | "Dinheiro">("Pix");
+  const [troco, setTroco] = useState("");
   
   // Form de Checkout
   const [customer, setCustomer] = useState({
@@ -75,7 +78,9 @@ const Menu = () => {
   };
 
   const cartTotal = cart.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+  const taxaEntrega = tipoEntrega === "Delivery" ? 5.00 : 0;
   const cartCount = cart.reduce((total, item) => total + item.quantidade, 0);
+  const finalTotal = cartTotal + taxaEntrega;
 
   const handleCheckout = async () => {
     if (!customer.nome || !customer.telefone || !customer.endereco) {
@@ -92,9 +97,11 @@ const Menu = () => {
         .insert({
           cliente_nome: customer.nome,
           cliente_telefone: customer.telefone,
-          cliente_endereco: customer.endereco,
-          total: cartTotal,
-          status: 'Pendente'
+          cliente_endereco: tipoEntrega === "Retirada" ? "Retirada no Local" : customer.endereco,
+          total: finalTotal,
+          status: 'Pendente',
+          metodo_pagamento: metodoPagamento + (metodoPagamento === "Dinheiro" && troco ? ` (Troco para ${troco})` : ""),
+          tipo_entrega: tipoEntrega
         })
         .select()
         .single();
@@ -117,11 +124,13 @@ const Menu = () => {
 
       // 3. Preparar Mensagem de WhatsApp
       const msgHeader = `*Novo Pedido #${pedido.id.slice(0, 5)}*\n\n`;
-      const msgCliente = `*Cliente:* ${customer.nome}\n*Telefone:* ${customer.telefone}\n*Endereço:* ${customer.endereco}\n\n`;
+      const msgCliente = `*Cliente:* ${customer.nome}\n*Telefone:* ${customer.telefone}\n*Tipo:* ${tipoEntrega}\n${tipoEntrega === 'Delivery' ? `*Endereço:* ${customer.endereco}\n` : ''}\n`;
       const msgItens = cart.map(item => `- ${item.quantidade}x ${item.nome} (${fmtBRL(item.preco * item.quantidade)})`).join('\n');
-      const msgTotal = `\n\n*Total: ${fmtBRL(cartTotal)}*`;
+      const pagamentoStr = metodoPagamento + (metodoPagamento === "Dinheiro" && troco ? ` (Troco para ${troco})` : "");
+      const msgPagamento = `\n\n*Pagamento:* ${pagamentoStr}`;
+      const msgTotal = `\n*Subtotal:* ${fmtBRL(cartTotal)}\n${tipoEntrega === 'Delivery' ? `*Taxa de Entrega:* ${fmtBRL(taxaEntrega)}\n` : ''}*TOTAL FINAL:* ${fmtBRL(finalTotal)}`;
       
-      const fullMessage = encodeURIComponent(msgHeader + msgCliente + "*Itens:*\n" + msgItens + msgTotal);
+      const fullMessage = encodeURIComponent(msgHeader + msgCliente + "*Itens:*\n" + msgItens + msgPagamento + msgTotal);
       const whatsappUrl = `https://wa.me/5533998797876?text=${fullMessage}`;
 
       toast.success("Pedido enviado com sucesso!");
@@ -332,8 +341,21 @@ const Menu = () => {
 
             {/* Dados do Cliente */}
             <div className="space-y-4 border-t pt-6">
-              <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Onde entregar?</h4>
-              <div className="space-y-3">
+              <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Como deseja receber?</h4>
+              <div className="flex gap-4">
+                <Button 
+                  variant={tipoEntrega === "Delivery" ? "default" : "outline"} 
+                  className={tipoEntrega === "Delivery" ? "flex-1 border-2 border-primary" : "flex-1"}
+                  onClick={() => setTipoEntrega("Delivery")}
+                >Delivery (+ R$ 5,00)</Button>
+                <Button 
+                  variant={tipoEntrega === "Retirada" ? "default" : "outline"} 
+                  className={tipoEntrega === "Retirada" ? "flex-1 border-2 border-primary" : "flex-1"}
+                  onClick={() => setTipoEntrega("Retirada")}
+                >Retirada (Grátis)</Button>
+              </div>
+
+              <div className="space-y-3 mt-4">
                 <div className="space-y-1">
                   <Label className="text-xs">Seu Nome</Label>
                   <div className="relative">
@@ -348,20 +370,53 @@ const Menu = () => {
                     <Input placeholder="(00) 00000-0000" className="pl-10" value={customer.telefone} onChange={e => setCustomer({...customer, telefone: e.target.value})} />
                   </div>
                 </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Endereço Completo</Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="Rua, número, bairro..." className="pl-10" value={customer.endereco} onChange={e => setCustomer({...customer, endereco: e.target.value})} />
+                {tipoEntrega === "Delivery" && (
+                  <div className="space-y-1">
+                    <Label className="text-xs">Endereço Completo</Label>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input placeholder="Rua, número, bairro..." className="pl-10" value={customer.endereco} onChange={e => setCustomer({...customer, endereco: e.target.value})} />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
 
-            <div className="border-t pt-4">
-              <div className="flex justify-between items-center text-lg font-bold">
-                <span>Total</span>
-                <span className="text-primary text-2xl">{fmtBRL(cartTotal)}</span>
+            {/* Pagamento */}
+            <div className="space-y-4 border-t pt-6">
+              <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground">Como deseja pagar?</h4>
+              <div className="grid grid-cols-3 gap-2">
+                {["Pix", "Cartão", "Dinheiro"].map((metodo) => (
+                  <Button 
+                    key={metodo}
+                    variant={metodoPagamento === metodo ? "default" : "outline"} 
+                    className={metodoPagamento === metodo ? "border-2 border-primary" : ""}
+                    onClick={() => setMetodoPagamento(metodo as any)}
+                  >{metodo}</Button>
+                ))}
+              </div>
+              {metodoPagamento === "Dinheiro" && (
+                <div className="pt-2">
+                  <Label className="text-xs">Troco para quanto? (Opcional)</Label>
+                  <Input placeholder="Ex: 50" value={troco} onChange={e => setTroco(e.target.value)} />
+                </div>
+              )}
+            </div>
+
+            <div className="border-t pt-4 space-y-2">
+              <div className="flex justify-between text-muted-foreground text-sm">
+                <span>Subtotal</span>
+                <span>{fmtBRL(cartTotal)}</span>
+              </div>
+              {tipoEntrega === "Delivery" && (
+                <div className="flex justify-between text-muted-foreground text-sm">
+                  <span>Taxa de Entrega</span>
+                  <span>{fmtBRL(taxaEntrega)}</span>
+                </div>
+              )}
+              <div className="flex justify-between items-center text-lg font-bold pt-2 border-t border-dashed">
+                <span>Total Final</span>
+                <span className="text-primary text-2xl">{fmtBRL(finalTotal)}</span>
               </div>
             </div>
           </div>

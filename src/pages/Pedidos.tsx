@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin, MessageSquare, XCircle, ChevronRight 
+  Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin, MessageSquare, XCircle, ChevronRight, Printer 
 } from "lucide-react";
 import { fmtBRL } from "@/lib/format";
 import { formatDistanceToNow } from "date-fns";
@@ -47,6 +47,83 @@ const Pedidos = () => {
     }
   };
 
+  const handlePrint = (pedido: Pedido) => {
+    const printWindow = window.open('', '_blank', 'width=400,height=600');
+    if (!printWindow) return;
+    
+    const html = `
+      <html>
+        <head>
+          <title>Comanda #${pedido.id.slice(0, 5)}</title>
+          <style>
+            @page { margin: 0; }
+            body { 
+              font-family: monospace; 
+              width: 300px; 
+              margin: 0 auto; 
+              padding: 10px;
+              color: #000;
+              font-size: 14px;
+            }
+            .center { text-align: center; }
+            .bold { font-weight: bold; }
+            .divider { border-bottom: 1px dashed #000; margin: 10px 0; }
+            .row { display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <div class="center bold" style="font-size: 18px;">RED BURGUER'S</div>
+          <div class="center">Pedido #${pedido.id.slice(0, 5)}</div>
+          <div class="center">${new Date(pedido.created_at).toLocaleString('pt-BR')}</div>
+          
+          <div class="divider"></div>
+          
+          <div class="bold">CLIENTE:</div>
+          <div>${pedido.cliente_nome}</div>
+          <div>${pedido.cliente_telefone}</div>
+          
+          <div class="divider"></div>
+          
+          <div class="bold">TIPO: ${pedido.tipo_entrega || 'Delivery'}</div>
+          ${pedido.tipo_entrega !== 'Retirada' ? `<div>ENDEREÇO:<br>${pedido.cliente_endereco}</div>` : ''}
+          
+          <div class="divider"></div>
+          
+          <div class="bold">ITENS:</div>
+          ${pedido.itens_pedido?.map((item: any) => `
+            <div class="row">
+              <span>${item.quantidade}x ${item.produtos?.nome}</span>
+              <span>R$ ${(item.preco_unitario * item.quantidade).toFixed(2)}</span>
+            </div>
+          `).join('')}
+          
+          <div class="divider"></div>
+          
+          <div class="row bold" style="font-size: 16px;">
+            <span>TOTAL:</span>
+            <span>R$ ${pedido.total.toFixed(2)}</span>
+          </div>
+          
+          <div class="divider"></div>
+          
+          <div class="bold">PAGAMENTO:</div>
+          <div>${pedido.metodo_pagamento || 'Não informado'}</div>
+          
+          <div class="divider"></div>
+          <div class="center">Obrigado pela preferência!</div>
+        </body>
+      </html>
+    `;
+    
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 500);
+  };
+
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -87,6 +164,7 @@ const Pedidos = () => {
                     onStatusChange={handleStatusChange} 
                     onNotify={notifyCustomer} 
                     onCancel={(id) => updateStatus.mutate({ id, status: 'Cancelado' })}
+                    onPrint={handlePrint}
                     isPending={updateStatus.isPending}
                     getStatusColor={getStatusColor}
                   />
@@ -98,7 +176,7 @@ const Pedidos = () => {
           <TabsContent value="finalizados" className="space-y-6">
              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {finalizados.map((pedido) => (
-                  <PedidoCard key={pedido.id} pedido={pedido} isHistory getStatusColor={getStatusColor} />
+                  <PedidoCard key={pedido.id} pedido={pedido} isHistory getStatusColor={getStatusColor} onPrint={handlePrint} />
                 ))}
              </div>
              {finalizados.length === 0 && <EmptyState text="Nenhum pedido finalizado ainda." />}
@@ -107,7 +185,7 @@ const Pedidos = () => {
           <TabsContent value="cancelados" className="space-y-6">
              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {cancelados.map((pedido) => (
-                  <PedidoCard key={pedido.id} pedido={pedido} isHistory getStatusColor={getStatusColor} />
+                  <PedidoCard key={pedido.id} pedido={pedido} isHistory getStatusColor={getStatusColor} onPrint={handlePrint} />
                 ))}
              </div>
              {cancelados.length === 0 && <EmptyState text="Nenhum pedido cancelado." />}
@@ -118,7 +196,7 @@ const Pedidos = () => {
   );
 };
 
-const PedidoCard = ({ pedido, onStatusChange, onNotify, onCancel, isPending, getStatusColor, isHistory }: any) => (
+const PedidoCard = ({ pedido, onStatusChange, onNotify, onCancel, onPrint, isPending, getStatusColor, isHistory }: any) => (
   <Card className="overflow-hidden border shadow-sm hover:shadow-md transition-all">
     <CardHeader className="bg-white border-b pb-4">
       <div className="flex items-center justify-between">
@@ -126,14 +204,26 @@ const PedidoCard = ({ pedido, onStatusChange, onNotify, onCancel, isPending, get
           <ShoppingBag className="h-4 w-4 text-primary" />
           <span className="font-bold">#{pedido.id.slice(0, 5)}</span>
           {!isHistory && (
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-50"
-              onClick={() => onNotify(pedido)}
-            >
-              <MessageSquare className="h-4 w-4" />
-            </Button>
+            <>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6 text-slate-600 hover:text-slate-900"
+                onClick={() => onPrint(pedido)}
+                title="Imprimir Comanda"
+              >
+                <Printer className="h-4 w-4" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-50"
+                onClick={() => onNotify(pedido)}
+                title="Notificar WhatsApp"
+              >
+                <MessageSquare className="h-4 w-4" />
+              </Button>
+            </>
           )}
         </div>
         <Badge className={getStatusColor(pedido.status)}>
@@ -151,6 +241,12 @@ const PedidoCard = ({ pedido, onStatusChange, onNotify, onCancel, isPending, get
         <h3 className="font-bold text-lg">{pedido.cliente_nome}</h3>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <MapPin className="h-3 w-3" /> {pedido.cliente_endereco}
+        </div>
+        <div className="flex items-center justify-between text-xs font-medium text-slate-600 border-t pt-2 mt-2">
+           <Badge variant="outline" className={pedido.tipo_entrega === 'Delivery' ? 'border-primary text-primary' : ''}>
+              {pedido.tipo_entrega || 'Delivery'}
+           </Badge>
+           <span>{pedido.metodo_pagamento || 'Não informado'}</span>
         </div>
       </div>
 
