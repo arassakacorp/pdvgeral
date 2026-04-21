@@ -1,10 +1,15 @@
+import { useState } from "react";
 import { usePedidos, useUpdatePedidoStatus, Pedido } from "@/hooks/usePedidos";
+import { useConfig, useUpdateConfig } from "@/hooks/useConfig";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
-  Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin, MessageSquare, XCircle, ChevronRight, Printer 
+  Loader2, Clock, CheckCircle2, ShoppingBag, Phone, MapPin, MessageSquare, XCircle, ChevronRight, Printer, Image as ImageIcon
 } from "lucide-react";
 import { fmtBRL } from "@/lib/format";
 import { formatDistanceToNow } from "date-fns";
@@ -13,6 +18,22 @@ import { ptBR } from "date-fns/locale";
 const Pedidos = () => {
   const { data: pedidos = [], isLoading } = usePedidos();
   const updateStatus = useUpdatePedidoStatus();
+  
+  const [configOpen, setConfigOpen] = useState(false);
+  const { data: heroImage = "" } = useConfig("hero_image");
+  const [newImage, setNewImage] = useState("");
+  const updateConfig = useUpdateConfig();
+
+  const handleOpenConfig = () => {
+    setNewImage(heroImage || "/premium_burger_hero_1776746871020.png");
+    setConfigOpen(true);
+  };
+
+  const handleSaveConfig = () => {
+    updateConfig.mutate({ chave: "hero_image", valor: newImage }, {
+      onSuccess: () => setConfigOpen(false)
+    });
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -144,6 +165,9 @@ const Pedidos = () => {
             <h1 className="text-3xl font-bold tracking-tight">Monitor de Pedidos</h1>
             <p className="text-muted-foreground">Acompanhe os estágios de produção em tempo real.</p>
           </div>
+          <Button variant="outline" onClick={handleOpenConfig} className="gap-2">
+             <ImageIcon className="h-4 w-4" /> Alterar Banner da Loja
+          </Button>
         </div>
 
         <Tabs defaultValue="ativos" className="space-y-6">
@@ -192,6 +216,36 @@ const Pedidos = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <Dialog open={configOpen} onOpenChange={setConfigOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Alterar Imagem da Loja</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Link da Imagem (URL)</Label>
+              <Input 
+                value={newImage} 
+                onChange={(e) => setNewImage(e.target.value)} 
+                placeholder="https://..."
+              />
+              <p className="text-xs text-muted-foreground">Cole o link de uma imagem da internet para ser a capa principal do cardápio.</p>
+            </div>
+            {newImage && (
+               <div className="mt-4 rounded-xl overflow-hidden border-2 border-dashed h-40">
+                  <img src={newImage} alt="Preview" className="w-full h-full object-cover" />
+               </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfigOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSaveConfig} disabled={updateConfig.isPending}>
+              {updateConfig.isPending ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : "Salvar Capa"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

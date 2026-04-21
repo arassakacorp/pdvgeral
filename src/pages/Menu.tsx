@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { useProdutos } from "@/hooks/useProdutos";
+import { useConfig } from "@/hooks/useConfig";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -44,6 +45,7 @@ const Menu = () => {
   const [tipoEntrega, setTipoEntrega] = useState<"Retirada" | "Delivery">("Delivery");
   const [metodoPagamento, setMetodoPagamento] = useState<"Pix" | "Cartão" | "Dinheiro">("Pix");
   const [troco, setTroco] = useState("");
+  const { data: heroImage } = useConfig("hero_image");
   
   // Form de Checkout
   const [customer, setCustomer] = useState({
@@ -210,7 +212,7 @@ const Menu = () => {
             {/* Banner Promocional */}
             <div className="relative h-56 md:h-72 rounded-[3rem] overflow-hidden shadow-elegant-lg group border-4 border-white/50">
                <img 
-                src="/premium_burger_hero_1776746871020.png" 
+                src={heroImage || "/premium_burger_hero_1776746871020.png"} 
                 alt="Promo" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />

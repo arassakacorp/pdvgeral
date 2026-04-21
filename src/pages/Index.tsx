@@ -12,8 +12,11 @@ import {
   ChevronDown
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useConfig } from "@/hooks/useConfig";
 
 const Index = () => {
+  const { data: heroImage } = useConfig("hero_image");
+
   return (
     <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black font-sans">
       {/* Navbar */}
@@ -45,7 +48,7 @@ const Index = () => {
       <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/premium_burger_hero_1776746871020.png" 
+            src={heroImage || "/premium_burger_hero_1776746871020.png"} 
             alt="Background" 
             className="w-full h-full object-cover opacity-50 scale-105"
           />
@@ -148,7 +151,7 @@ const Index = () => {
             {/* Item 1 */}
             <div className="group bg-white/[0.02] border border-white/5 rounded-3xl p-6 hover:border-primary/50 transition-all hover:-translate-y-2">
               <div className="aspect-square bg-white/5 rounded-2xl mb-6 overflow-hidden relative">
-                 <img src="/premium_burger_hero_1776746871020.png" alt="Burger 1" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                 <img src={heroImage || "/premium_burger_hero_1776746871020.png"} alt="Burger 1" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                  <div className="absolute top-4 right-4 bg-primary text-black font-black text-sm px-3 py-1 rounded-full rotate-3">
                    TOP 1
                  </div>
@@ -182,7 +185,7 @@ const Index = () => {
             {/* Item 3 */}
             <div className="group bg-white/[0.02] border border-white/5 rounded-3xl p-6 hover:border-primary/50 transition-all hover:-translate-y-2">
               <div className="aspect-square bg-white/5 rounded-2xl mb-6 flex items-center justify-center overflow-hidden">
-                 <img src="/premium_burger_hero_1776746871020.png" alt="Burger 3" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 hue-rotate-15" />
+                 <img src={heroImage || "/premium_burger_hero_1776746871020.png"} alt="Burger 3" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 hue-rotate-15" />
               </div>
               <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-2">Smash <span className="text-primary">Duplo</span></h3>
               <p className="text-white/40 text-sm mb-6 line-clamp-2">
@@ -210,7 +213,7 @@ const Index = () => {
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-16 items-center">
           <div className="relative">
              <div className="aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 relative z-10">
-               <img src="/premium_burger_hero_1776746871020.png" alt="Nossa Cozinha" className="w-full h-full object-cover scale-150 -translate-x-10 opacity-60 grayscale hover:grayscale-0 transition-all duration-1000" />
+               <img src={heroImage || "/premium_burger_hero_1776746871020.png"} alt="Nossa Cozinha" className="w-full h-full object-cover scale-150 -translate-x-10 opacity-60 grayscale hover:grayscale-0 transition-all duration-1000" />
                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
              </div>
              <div className="absolute -bottom-8 -right-8 bg-primary text-black p-8 rounded-3xl z-20 shadow-glow font-black text-2xl max-w-[200px] rotate-3">
