@@ -185,10 +185,7 @@ const Menu = () => {
                 <MapPin className="h-4 w-4" /> Centro, Cidade
               </span>
             </div>
-            <div className="h-10 w-[1px] bg-border/50" />
-            <Link to="/auth">
-              <Button variant="ghost" className="font-black uppercase tracking-tighter hover:text-primary transition-all">Entrar</Button>
-            </Link>
+            {/* Botão de Entrar removido para manter o foco do cliente apenas na compra */}
           </div>
         </div>
       </header>
