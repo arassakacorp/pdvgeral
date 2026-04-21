@@ -2,12 +2,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recha
 import { fmtBRL } from "@/lib/format";
 
 const COLORS = [
-  "hsl(252 83% 58%)",
-  "hsl(190 95% 50%)",
-  "hsl(152 70% 42%)",
+  "hsl(28 90% 50%)",
+  "hsl(42 100% 50%)",
   "hsl(38 95% 55%)",
+  "hsl(142 70% 35%)",
   "hsl(0 84% 60%)",
-  "hsl(270 90% 70%)",
+  "hsl(20 90% 60%)",
 ];
 
 interface Props {

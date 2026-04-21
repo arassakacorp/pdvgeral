@@ -70,11 +70,13 @@ const TrackOrder = () => {
       <div className="mx-auto max-w-md space-y-8 animate-fade-in">
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="mx-auto h-16 w-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow mb-4">
-             <UtensilsCrossed className="text-white h-8 w-8" />
+          <div className="mx-auto h-20 w-20 bg-primary rounded-3xl flex items-center justify-center shadow-glow rotate-3 mb-6">
+             <span className="text-white font-black text-4xl italic">R</span>
           </div>
-          <h1 className="text-2xl font-bold">Acompanhe seu Pedido</h1>
-          <p className="text-sm text-muted-foreground">Pedido #{id?.slice(0, 5)}</p>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">
+            Red <span className="text-primary">Burguer's</span>
+          </h1>
+          <p className="text-sm text-muted-foreground font-medium uppercase tracking-widest">Pedido #{id?.slice(0, 5)}</p>
         </div>
 
         {/* Status Visual */}
@@ -137,8 +139,8 @@ const TrackOrder = () => {
           </CardContent>
         </Card>
 
-        <p className="text-center text-xs text-muted-foreground pt-8">
-           Obrigado por escolher a Lanchonete Express! ❤️
+        <p className="text-center text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground pt-8">
+           Obrigado por escolher a RedBurguer's! ❤️
         </p>
       </div>
     </div>

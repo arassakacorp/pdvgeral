@@ -26,7 +26,7 @@ export const TopProductsChart = ({ data }: Props) => {
           />
           <Bar dataKey="lucro" radius={[0, 8, 8, 0]}>
             {data.map((d, i) => (
-              <Cell key={i} fill={d.lucro >= 0 ? "hsl(252 83% 58%)" : "hsl(0 84% 60%)"} />
+              <Cell key={i} fill={d.lucro >= 0 ? "hsl(28 90% 50%)" : "hsl(0 84% 60%)"} />
             ))}
           </Bar>
         </BarChart>

@@ -152,8 +152,8 @@ const Menu = () => {
             <div className="h-10 w-10 bg-primary rounded-xl flex items-center justify-center shadow-glow rotate-3">
               <span className="text-white font-black text-xl italic leading-none">N</span>
             </div>
-            <span className="font-black text-xl tracking-tighter uppercase italic hidden sm:block">
-              Nano <span className="text-primary">Banana</span>
+            <span className="font-black text-2xl tracking-tighter uppercase italic">
+              Red <span className="text-primary">Burguer's</span>
             </span>
           </Link>
 
@@ -177,7 +177,9 @@ const Menu = () => {
               </span>
             </div>
             <div className="h-10 w-[1px] bg-border/50" />
-            <Button variant="ghost" className="font-black uppercase tracking-tighter hover:text-primary transition-all">Entrar</Button>
+            <Link to="/auth">
+              <Button variant="ghost" className="font-black uppercase tracking-tighter hover:text-primary transition-all">Entrar</Button>
+            </Link>
           </div>
         </div>
       </header>

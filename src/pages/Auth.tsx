@@ -60,7 +60,9 @@ const Auth = () => {
           <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary shadow-glow">
             <Sparkles className="h-7 w-7 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Painel de Vendas</h1>
+          <h1 className="text-3xl font-black italic uppercase tracking-tighter">
+            Red <span className="text-primary">Burguer's</span>
+          </h1>
           <p className="mt-2 text-sm text-muted-foreground">
             {mode === "signin" ? "Entre para acessar seu controle" : "Crie sua conta para começar"}
           </p>

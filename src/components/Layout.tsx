@@ -88,12 +88,12 @@ const Layout = ({ children }: LayoutProps) => {
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-8 flex flex-col items-center gap-4 border-b border-border/50">
-            <div className="h-16 w-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow rotate-3 transform transition-transform hover:rotate-0">
-              <Sparkles className="text-white h-10 w-10" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
+              <span className="text-xl font-black italic text-primary-foreground">R</span>
             </div>
             <div className="text-center">
               <div className="font-black text-2xl tracking-tighter uppercase italic">
-                Burger <span className="text-primary">Master</span>
+                Red <span className="text-primary">Burguer's</span>
               </div>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Painel Admin</p>
             </div>
