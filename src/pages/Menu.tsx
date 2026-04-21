@@ -16,8 +16,12 @@ import {
   Phone,
   User,
   X,
-  Loader2
+  Loader2,
+  Star,
+  Utensils,
+  ArrowRight
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { fmtBRL } from "@/lib/format";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
