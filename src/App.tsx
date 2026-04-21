@@ -10,6 +10,7 @@ import Pedidos from "./pages/Pedidos.tsx";
 import Menu from "./pages/Menu.tsx";
 import Produtos from "./pages/Produtos.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import Financeiro from "./pages/Financeiro.tsx";
 import TrackOrder from "./pages/TrackOrder.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Layout from "./components/Layout.tsx";
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/pedidos" element={<Pedidos />} />
             <Route path="/produtos" element={<Produtos />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/financeiro" element={<Financeiro />} />
             <Route path="/cardapio" element={<Menu />} />
             <Route path="/acompanhar/:id" element={<TrackOrder />} />
             <Route path="*" element={<NotFound />} />
