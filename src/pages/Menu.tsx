@@ -181,65 +181,81 @@ const Menu = () => {
         </div>
       </header>
 
-      {/* Categorias e Produtos */}
-      <main className="container max-w-2xl px-4 py-6 space-y-6">
-        <div className="grid gap-6">
-          {filteredProdutos.map((p) => (
-            <Card key={p.id} className="overflow-hidden border-none shadow-elegant hover:shadow-glow transition-all duration-300 group">
-              <div className="flex p-4 gap-6 items-center">
-                <div className="flex-1 space-y-2">
-                  <div>
-                    <h3 className="font-black text-xl text-foreground uppercase tracking-tighter group-hover:text-primary transition-colors">{p.nome}</h3>
-                    <p className="text-sm text-muted-foreground line-clamp-2 leading-tight">{p.categoria}</p>
-                  </div>
-                  <div className="flex items-center gap-3 pt-2">
-                    <span className="text-primary font-black text-2xl tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
-                    {Number(p.valor_venda) > 30 && (
-                       <Badge className="bg-accent text-accent-foreground font-bold text-[10px] animate-bounce">TOP</Badge>
-                    )}
+      {/* Navegação de Categorias Sticky */}
+      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b">
+        <div className="container max-w-2xl px-4 py-3">
+          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+            {["Burgers", "Combos", "Acompanhamentos", "Bebidas", "Sobremesas"].map((cat) => (
+              <Button 
+                key={cat}
+                variant="ghost" 
+                className="whitespace-nowrap rounded-full font-bold text-sm uppercase tracking-tighter hover:text-primary transition-all active:scale-95"
+              >
+                {cat}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Lista de Produtos (Estilo iFood/Asgard) */}
+      <main className="container max-w-2xl px-4 py-8 space-y-12">
+        <section className="space-y-6">
+          <h2 className="text-2xl font-black italic uppercase tracking-tighter border-l-4 border-primary pl-4">Nossos Burgers</h2>
+          <div className="grid gap-2">
+            {filteredProdutos.map((p) => (
+              <div 
+                key={p.id} 
+                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-all cursor-pointer group border-b border-border/50 last:border-0"
+                onClick={() => addToCart(p)}
+              >
+                <div className="flex-1 space-y-1">
+                  <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors uppercase tracking-tight">{p.nome}</h3>
+                  <p className="text-sm text-muted-foreground line-clamp-2 font-medium leading-snug">{p.categoria}</p>
+                  <div className="pt-2">
+                    <span className="text-xl font-black text-primary tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
                   </div>
                 </div>
-                <div className="relative w-32 h-32 flex-shrink-0">
+                <div className="relative h-24 w-24 flex-shrink-0">
                   {p.imagem_url ? (
                     <img 
                       src={p.imagem_url} 
                       alt={p.nome} 
-                      className="w-full h-full object-cover rounded-2xl shadow-md transform transition-transform group-hover:scale-105" 
+                      className="h-full w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform" 
                     />
                   ) : (
-                    <div className="w-full h-full bg-muted rounded-2xl flex items-center justify-center text-muted-foreground border-2 border-dashed">
-                      <ShoppingBag />
+                    <div className="h-full w-full bg-muted rounded-xl flex items-center justify-center text-muted-foreground border">
+                      <ShoppingBag className="h-8 w-8 opacity-20" />
                     </div>
                   )}
-                  <Button 
-                    size="icon" 
-                    className="absolute -bottom-2 -right-2 h-10 w-10 rounded-xl shadow-elegant bg-primary hover:bg-primary/90 text-white transform transition-all hover:scale-110 active:scale-95"
-                    onClick={() => addToCart(p)}
-                  >
-                    <Plus className="h-6 w-6 font-bold" />
-                  </Button>
+                  <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-primary text-white rounded-lg flex items-center justify-center shadow-glow group-active:scale-90 transition-all">
+                    <Plus className="h-5 w-5 font-bold" />
+                  </div>
                 </div>
               </div>
-            </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        </section>
       </main>
 
-      {/* Carrinho Flutuante */}
+      {/* Carrinho Flutuante (Estilo App) */}
       {cart.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-2xl z-30">
+        <div className="fixed bottom-6 left-0 right-0 z-40 px-4 animate-in slide-in-from-bottom-10 duration-300">
           <Button 
-            className="w-full h-14 rounded-2xl shadow-2xl bg-primary hover:bg-primary/90 flex justify-between px-6 items-center"
+            className="w-full max-w-2xl mx-auto h-16 rounded-2xl shadow-glow-lg flex items-center justify-between px-8 bg-primary hover:bg-primary/90 transition-all active:scale-95"
             onClick={() => setCheckoutOpen(true)}
           >
-            <div className="flex items-center gap-2">
-              <div className="bg-white/20 px-2 py-0.5 rounded-md text-sm font-bold">{cartCount}</div>
-              <span className="font-bold">Ver Carrinho</span>
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-white/20 rounded-lg flex items-center justify-center">
+                <span className="font-black">{cart.length}</span>
+              </div>
+              <span className="font-black uppercase tracking-tighter">Ver Carrinho</span>
             </div>
-            <span className="font-bold text-lg">{fmtBRL(cartTotal)}</span>
+            <span className="text-xl font-black tracking-tighter">{fmtBRL(cartTotal)}</span>
           </Button>
         </div>
       )}
+
 
       {/* Modal de Checkout */}
       <Dialog open={checkoutOpen} onOpenChange={setCheckoutOpen}>

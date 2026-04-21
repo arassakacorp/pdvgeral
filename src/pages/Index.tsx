@@ -47,56 +47,49 @@ const Index = () => {
           <img 
             src="/premium_burger_hero_1776746871020.png" 
             alt="Background" 
-            className="w-full h-full object-cover opacity-40 scale-110 blur-sm"
+            className="w-full h-full object-cover opacity-50 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/60 to-transparent" />
         </div>
 
         <div className="container mx-auto px-6 relative z-10 grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8 animate-fade-in">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
-              <Star className="h-4 w-4 text-primary fill-primary" />
-              <span className="text-xs font-black uppercase tracking-widest">O Melhor da Região</span>
+          <div className="space-y-10 animate-fade-in">
+            <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/20 border border-primary/30 backdrop-blur-md">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Aberto e Entregando</span>
             </div>
-            <h1 className="text-6xl md:text-8xl font-black italic uppercase leading-[0.9] tracking-tighter">
-              Sabor <br />
-              <span className="text-primary">Artesanal</span> <br />
-              Elevado
+            <h1 className="text-7xl md:text-9xl font-black italic uppercase leading-[0.8] tracking-tighter">
+              Nano <br />
+              <span className="text-primary stroke-text">Banana</span>
             </h1>
-            <p className="text-lg text-white/60 max-w-md leading-relaxed">
-              Hambúrgueres feitos na brasa, com blends secretos e a nossa exclusiva Banana Caramelizada que vai explodir sua mente.
+            <p className="text-xl text-white/80 max-w-sm font-medium leading-tight">
+              Onde a força do sabor encontra a doçura da perfeição. O hambúrguer que você nunca vai esquecer.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:row gap-6 pt-4">
               <Link to="/cardapio">
-                <Button size="lg" className="h-16 px-10 rounded-2xl text-xl font-black uppercase tracking-tighter group">
-                  Ver Cardápio <ArrowRight className="ml-2 h-6 w-6 transition-transform group-hover:translate-x-1" />
+                <Button size="lg" className="h-20 px-12 rounded-3xl text-2xl font-black uppercase tracking-tighter shadow-glow hover:scale-105 active:scale-95 transition-all">
+                  Peça o Seu Agora
                 </Button>
               </Link>
-              <div className="flex items-center gap-4 px-6 border-l border-white/20">
-                <div className="text-primary">
-                  <Clock className="h-8 w-8" />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase font-bold text-white/40 tracking-widest">Aberto Hoje até</p>
-                  <p className="font-black text-xl italic tracking-tighter">23:30h</p>
-                </div>
-              </div>
             </div>
           </div>
 
-          <div className="relative group perspective-1000 hidden md:block">
-            <div className="relative z-10 transition-transform duration-500 group-hover:rotate-3 group-hover:scale-105">
-               <img 
-                src="/nano_banana_burger_special_1776776797511.png" 
-                alt="Signature Burger" 
-                className="rounded-[3rem] shadow-glow-lg border-4 border-primary/20"
-              />
-              <div className="absolute -bottom-6 -right-6 bg-primary text-black p-6 rounded-3xl shadow-glow rotate-12 group-hover:rotate-0 transition-all">
-                 <p className="font-black text-3xl italic leading-none uppercase">R$ 38,90</p>
-                 <p className="text-[10px] font-bold uppercase tracking-widest">Nano Especial</p>
-              </div>
-            </div>
-            <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse" />
+          <div className="relative hidden md:block group">
+             <div className="relative z-10 animate-float">
+                <img 
+                  src="/nano_banana_burger_special_1776776797511.png" 
+                  alt="Special Burger" 
+                  className="rounded-[4rem] shadow-glow-lg border-2 border-white/10 group-hover:rotate-2 transition-transform duration-700"
+                />
+                <div className="absolute -top-10 -right-10 bg-accent text-black p-8 rounded-full shadow-glow font-black text-4xl rotate-12 flex flex-col items-center justify-center border-4 border-black">
+                   <span className="text-sm uppercase tracking-widest mb-1">Só</span>
+                   R$ 38
+                </div>
+             </div>
+             <div className="absolute -inset-20 bg-primary/20 blur-[120px] rounded-full -z-10 animate-pulse" />
           </div>
         </div>
 

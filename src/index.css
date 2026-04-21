@@ -93,4 +93,19 @@
     background: var(--gradient-bg);
     min-height: 100vh;
   }
+
+  .stroke-text {
+    -webkit-text-stroke: 2px hsl(var(--primary));
+    color: transparent;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(2deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
 }
