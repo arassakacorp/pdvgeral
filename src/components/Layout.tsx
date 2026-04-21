@@ -9,7 +9,8 @@ import {
   Sparkles,
   Menu,
   X,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsAdmin } from "@/hooks/useAdmin";
@@ -22,9 +23,28 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const { pathname } = useLocation();
-  const { signOut, user } = useAuth();
-  const { data: isAdmin } = useIsAdmin();
+  const { signOut, user, loading: authLoading } = useAuth();
+  const { data: isAdmin, isLoading: adminLoading } = useIsAdmin();
   const [isOpen, setIsOpen] = useState(true);
+
+  // Páginas que exigem Admin
+  const adminRoutes = ["/", "/pedidos", "/produtos", "/admin"];
+  const isTargetingAdmin = adminRoutes.includes(pathname);
+
+  // Se estiver carregando auth ou admin check nas rotas sensíveis
+  if (isTargetingAdmin && (authLoading || adminLoading)) {
+    return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-primary" /></div>;
+  }
+
+  // Se tentar acessar admin sem ser admin
+  if (isTargetingAdmin && !isAdmin) {
+    return <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+      <Shield className="h-12 w-12 text-red-500" />
+      <h1 className="text-xl font-bold">Acesso Negredo</h1>
+      <p className="text-muted-foreground">Você não tem permissão para acessar esta área.</p>
+      <Button onClick={() => window.location.href = "/auth"}>Ir para Login</Button>
+    </div>;
+  }
 
   const menuItems = [
     { name: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -41,12 +61,12 @@ const Layout = ({ children }: LayoutProps) => {
   if (isPublicPage) return <>{children}</>;
 
   return (
-    <div className="flex min-h-screen bg-slate-50/50">
+    <div className="flex min-h-screen bg-background">
       {/* Sidebar Mobile Toggle */}
       <Button 
         variant="ghost" 
         size="icon" 
-        className="fixed top-4 left-4 z-50 md:hidden bg-white shadow-md border"
+        className="fixed top-4 left-4 z-50 md:hidden bg-card shadow-md border"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -55,19 +75,22 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Sidebar */}
       <aside 
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-slate-200 transition-all duration-300 transform",
+          "fixed inset-y-0 left-0 z-40 w-64 bg-card border-r border-border transition-all duration-300 transform shadow-elegant",
           isOpen ? "translate-x-0" : "-translate-x-full",
           "md:translate-x-0 md:static md:block"
         )}
       >
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="p-6 flex items-center gap-3 border-b">
-            <div className="h-10 w-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-              <Sparkles className="text-white h-6 w-6" />
+          <div className="p-8 flex flex-col items-center gap-4 border-b border-border/50">
+            <div className="h-16 w-16 bg-gradient-primary rounded-2xl flex items-center justify-center shadow-glow rotate-3 transform transition-transform hover:rotate-0">
+              <Sparkles className="text-white h-10 w-10" />
             </div>
-            <div className="font-bold text-xl tracking-tight text-slate-800">
-              PDV <span className="text-primary">Geral</span>
+            <div className="text-center">
+              <div className="font-black text-2xl tracking-tighter uppercase italic">
+                Burger <span className="text-primary">Master</span>
+              </div>
+              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Painel Admin</p>
             </div>
           </div>
 

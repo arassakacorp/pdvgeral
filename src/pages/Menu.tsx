@@ -139,27 +139,41 @@ const Menu = () => {
   if (isLoading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
-      {/* Header Estilizado */}
-      <header className="bg-white border-b sticky top-0 z-20">
+    <div className="min-h-screen bg-background pb-24 font-sans antialiased">
+      {/* Hero Section */}
+      <div className="relative h-64 md:h-80 overflow-hidden">
+        <img 
+          src="/premium_burger_hero_1776746871020.png" 
+          alt="Premium Burger" 
+          className="w-full h-full object-cover brightness-50"
+        />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6 space-y-2">
+          <div className="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center shadow-glow mb-2 rotate-3 transform transition-transform hover:rotate-0">
+             <Sparkles className="text-white h-10 w-10" />
+          </div>
+          <h1 className="text-4xl font-black italic tracking-tighter uppercase">Burger <span className="text-primary underline decoration-accent">Master</span></h1>
+          <p className="text-sm font-medium opacity-90 tracking-wide">O verdadeiro sabor artesanal na sua casa</p>
+        </div>
+      </div>
+
+      {/* Header Sticky com Busca */}
+      <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-20 shadow-sm">
         <div className="container max-w-2xl px-4 py-4 space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-gradient-primary rounded-xl flex items-center justify-center shadow-glow">
-              <Sparkles className="text-white h-6 w-6" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50">Aberto Agora</Badge>
+              <span>• 30-45 min</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold">Lanchonete Express</h1>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 px-1 py-0">Aberto</Badge>
-                • 30-50 min • Taxa: Grátis
-              </p>
+            <div className="flex items-center gap-1 text-primary">
+              <MapPin className="h-4 w-4" />
+              <span className="text-xs font-bold">Taxa Grátis</span>
             </div>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
             <Input 
-              placeholder="O que você quer comer hoje?" 
-              className="pl-10 rounded-full bg-slate-100 border-none focus-visible:ring-primary"
+              placeholder="Encontre seu lanche favorito..." 
+              className="pl-12 h-14 rounded-2xl bg-muted/50 border-none focus-visible:ring-2 focus-visible:ring-primary shadow-inner text-lg"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -169,29 +183,40 @@ const Menu = () => {
 
       {/* Categorias e Produtos */}
       <main className="container max-w-2xl px-4 py-6 space-y-6">
-        <div className="grid gap-4">
+        <div className="grid gap-6">
           {filteredProdutos.map((p) => (
-            <Card key={p.id} className="overflow-hidden border-none shadow-sm hover:shadow-md transition-all">
-              <div className="flex p-3 gap-4">
-                <div className="flex-1 space-y-1">
-                  <h3 className="font-bold text-slate-800">{p.nome}</h3>
-                  <p className="text-xs text-muted-foreground line-clamp-2">{p.categoria}</p>
-                  <p className="text-primary font-bold text-lg pt-2">{fmtBRL(Number(p.valor_venda))}</p>
+            <Card key={p.id} className="overflow-hidden border-none shadow-elegant hover:shadow-glow transition-all duration-300 group">
+              <div className="flex p-4 gap-6 items-center">
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <h3 className="font-black text-xl text-foreground uppercase tracking-tighter group-hover:text-primary transition-colors">{p.nome}</h3>
+                    <p className="text-sm text-muted-foreground line-clamp-2 leading-tight">{p.categoria}</p>
+                  </div>
+                  <div className="flex items-center gap-3 pt-2">
+                    <span className="text-primary font-black text-2xl tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
+                    {Number(p.valor_venda) > 30 && (
+                       <Badge className="bg-accent text-accent-foreground font-bold text-[10px] animate-bounce">TOP</Badge>
+                    )}
+                  </div>
                 </div>
-                <div className="relative w-28 h-28 flex-shrink-0">
+                <div className="relative w-32 h-32 flex-shrink-0">
                   {p.imagem_url ? (
-                    <img src={p.imagem_url} alt={p.nome} className="w-full h-full object-cover rounded-xl shadow-inner" />
+                    <img 
+                      src={p.imagem_url} 
+                      alt={p.nome} 
+                      className="w-full h-full object-cover rounded-2xl shadow-md transform transition-transform group-hover:scale-105" 
+                    />
                   ) : (
-                    <div className="w-full h-full bg-slate-200 rounded-xl flex items-center justify-center text-slate-400">
+                    <div className="w-full h-full bg-muted rounded-2xl flex items-center justify-center text-muted-foreground border-2 border-dashed">
                       <ShoppingBag />
                     </div>
                   )}
                   <Button 
                     size="icon" 
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-lg shadow-lg bg-white text-primary border border-primary/20 hover:bg-primary hover:text-white"
+                    className="absolute -bottom-2 -right-2 h-10 w-10 rounded-xl shadow-elegant bg-primary hover:bg-primary/90 text-white transform transition-all hover:scale-110 active:scale-95"
                     onClick={() => addToCart(p)}
                   >
-                    <Plus className="h-5 w-5" />
+                    <Plus className="h-6 w-6 font-bold" />
                   </Button>
                 </div>
               </div>
