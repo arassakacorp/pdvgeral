@@ -44,7 +44,7 @@ const Auth = () => {
         });
         if (error) throw error;
       }
-      nav("/");
+      nav("/dashboard");
     } catch (err) {
       const m = err instanceof Error ? err.message : "Erro";
       toast.error(m.includes("Invalid login") ? "Email ou senha inválidos" : m);
