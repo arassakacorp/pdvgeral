@@ -1,14 +1,44 @@
-import { usePedidos } from "@/hooks/usePedidos";
+import { useState } from "react";
+import { usePedidos, useUpdatePedidoFinanceiro, Pedido } from "@/hooks/usePedidos";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, DollarSign, CreditCard, Banknote, Landmark, TrendingUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2, DollarSign, CreditCard, Banknote, Landmark, TrendingUp, Edit } from "lucide-react";
 import { fmtBRL } from "@/lib/format";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
 const Financeiro = () => {
   const { data: pedidos = [], isLoading } = usePedidos();
+  const updateFinanceiro = useUpdatePedidoFinanceiro();
+  
+  const [editing, setEditing] = useState<Pedido | null>(null);
+  const [editForm, setEditForm] = useState({ total: 0, metodo_pagamento: "", tipo_entrega: "" });
+
+  const handleEditClick = (pedido: Pedido) => {
+    setEditing(pedido);
+    setEditForm({
+      total: pedido.total,
+      metodo_pagamento: pedido.metodo_pagamento || "",
+      tipo_entrega: pedido.tipo_entrega || ""
+    });
+  };
+
+  const handleSave = () => {
+    if (!editing) return;
+    updateFinanceiro.mutate({
+      id: editing.id,
+      total: Number(editForm.total),
+      metodo_pagamento: editForm.metodo_pagamento,
+      tipo_entrega: editForm.tipo_entrega
+    }, {
+      onSuccess: () => setEditing(null)
+    });
+  };
 
   if (isLoading) {
     return (
@@ -106,6 +136,7 @@ const Financeiro = () => {
                     <TableHead>Tipo</TableHead>
                     <TableHead>Pagamento</TableHead>
                     <TableHead className="text-right">Valor Pago</TableHead>
+                    <TableHead className="w-12"></TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -136,6 +167,11 @@ const Financeiro = () => {
                         <TableCell className="text-right font-bold text-emerald-600">
                           {fmtBRL(pedido.total)}
                         </TableCell>
+                        <TableCell>
+                          <Button variant="ghost" size="icon" onClick={() => handleEditClick(pedido)} title="Editar Faturamento">
+                            <Edit className="h-4 w-4 text-slate-500 hover:text-primary" />
+                          </Button>
+                        </TableCell>
                       </TableRow>
                     ))
                   )}
@@ -145,6 +181,47 @@ const Financeiro = () => {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={!!editing} onOpenChange={(open) => !open && setEditing(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Editar Pedido #{editing?.id.slice(0, 5)}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Valor Total (R$)</Label>
+              <Input 
+                type="number" 
+                step="0.01" 
+                value={editForm.total} 
+                onChange={(e) => setEditForm({ ...editForm, total: Number(e.target.value) })} 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Forma de Pagamento</Label>
+              <Input 
+                value={editForm.metodo_pagamento} 
+                onChange={(e) => setEditForm({ ...editForm, metodo_pagamento: e.target.value })} 
+                placeholder="Ex: Pix, Cartão, Dinheiro..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Tipo de Entrega</Label>
+              <Input 
+                value={editForm.tipo_entrega} 
+                onChange={(e) => setEditForm({ ...editForm, tipo_entrega: e.target.value })} 
+                placeholder="Ex: Delivery, Retirada..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditing(null)}>Cancelar</Button>
+            <Button onClick={handleSave} disabled={updateFinanceiro.isPending}>
+              {updateFinanceiro.isPending ? <Loader2 className="animate-spin h-4 w-4 mr-2" /> : "Salvar Alterações"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

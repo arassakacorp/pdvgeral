@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { fmtBRL, fmtPct, fmtInt } from "@/lib/format";
 import { useAuth } from "@/hooks/useAuth";
 import { useProdutos, useDeleteProduto, useBulkInsertProdutos, ProdutoDB } from "@/hooks/useProdutos";
+import { usePedidos } from "@/hooks/usePedidos";
 import { useIsAdmin, useCreatorsMap } from "@/hooks/useAdmin";
 import { exportToXLSX, parseXLSX } from "@/lib/xlsx";
 import { toast } from "sonner";
@@ -18,7 +19,8 @@ import { toast } from "sonner";
 const Index = () => {
   const nav = useNavigate();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { data: produtos = [], isLoading } = useProdutos();
+  const { data: produtos = [], isLoading: isLoadingProdutos } = useProdutos();
+  const { data: pedidos = [], isLoading: isLoadingPedidos } = usePedidos();
   const del = useDeleteProduto();
   const bulk = useBulkInsertProdutos();
   const { data: isAdmin } = useIsAdmin();
@@ -38,25 +40,61 @@ const Index = () => {
     [produtos, category]
   );
 
+  const finalizados = useMemo(() => pedidos.filter(p => p.status === 'Finalizado'), [pedidos]);
+
+  // Estatísticas calculadas em cima dos pedidos reais finalizados
   const stats = useMemo(() => {
-    const receita = filtered.reduce((s, p) => s + Number(p.venda_total), 0);
-    const custo = filtered.reduce((s, p) => s + Number(p.custo_total), 0);
-    const lucro = filtered.reduce((s, p) => s + Number(p.lucro), 0);
-    const unidades = filtered.reduce((s, p) => s + p.qntd_vendida, 0);
+    const receita = finalizados.reduce((s, p) => s + p.total, 0);
+    
+    // Para calcular custo e lucro real, precisamos do preço de custo dos produtos
+    // Como simplificação, pegamos o custo aproximado baseando na tabela de produtos
+    let custo = 0;
+    let unidades = 0;
+    
+    finalizados.forEach(pedido => {
+      pedido.itens_pedido?.forEach((item: any) => {
+         const produtoReal = produtos.find(p => p.id === item.produto_id);
+         const custoUnitario = produtoReal ? Number(produtoReal.custo) : 0;
+         custo += custoUnitario * item.quantidade;
+         unidades += item.quantidade;
+      });
+    });
+
+    const lucro = receita - custo;
     const margem = receita > 0 ? lucro / receita : 0;
     return { receita, custo, lucro, unidades, margem };
-  }, [filtered]);
+  }, [finalizados, produtos]);
 
+  // Gráfico por Categoria baseado nas vendas reais
   const byCategory = useMemo(() => {
     const map = new Map<string, number>();
-    produtos.forEach((p) => map.set(p.categoria, (map.get(p.categoria) ?? 0) + Number(p.venda_total)));
+    finalizados.forEach(pedido => {
+      pedido.itens_pedido?.forEach((item: any) => {
+        const cat = item.produtos?.categoria || 'Outros';
+        map.set(cat, (map.get(cat) ?? 0) + (item.preco_unitario * item.quantidade));
+      });
+    });
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
-  }, [produtos]);
+  }, [finalizados]);
 
-  const topProducts = useMemo(
-    () => [...filtered].sort((a, b) => Number(b.lucro) - Number(a.lucro)).slice(0, 10).map((p) => ({ nome: p.nome, lucro: Number(p.lucro) })),
-    [filtered]
-  );
+  // Gráfico de Top Produtos baseado nas vendas reais
+  const topProducts = useMemo(() => {
+    const map = new Map<string, number>();
+    finalizados.forEach(pedido => {
+      pedido.itens_pedido?.forEach((item: any) => {
+        const nome = item.produtos?.nome || 'Produto Removido';
+        // Lucro do produto = (preco_venda - custo) * quantidade
+        const produtoReal = produtos.find(p => p.id === item.produto_id);
+        const custoUnitario = produtoReal ? Number(produtoReal.custo) : 0;
+        const lucroBruto = (item.preco_unitario - custoUnitario) * item.quantidade;
+        map.set(nome, (map.get(nome) ?? 0) + lucroBruto);
+      });
+    });
+    return Array.from(map.entries())
+      .map(([nome, lucro]) => ({ nome, lucro }))
+      .sort((a, b) => b.lucro - a.lucro)
+      .slice(0, 10);
+  }, [finalizados, produtos]);
 
   if (authLoading) {
     return <div className="flex min-h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -124,7 +162,7 @@ const Index = () => {
           <StatCard label="Produtos Ativos" value={fmtInt(filtered.length)} hint={category === "Todas" ? "Todas as categorias" : category} icon={Package} variant="warning" />
         </section>
 
-        {isLoading ? (
+        {isLoadingProdutos || isLoadingPedidos ? (
           <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
         ) : produtos.length === 0 ? (
           <div className="rounded-2xl bg-card p-12 text-center shadow-soft">

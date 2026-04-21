@@ -67,7 +67,7 @@ export const usePedidos = () => {
           *,
           itens_pedido (
             *,
-            produtos (nome, imagem_url)
+            produtos (nome, imagem_url, categoria)
           )
         `)
         .order("created_at", { ascending: false });
@@ -87,6 +87,21 @@ export const useUpdatePedidoStatus = () => {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["pedidos"] });
       toast.success("Status atualizado");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+};
+
+export const useUpdatePedidoFinanceiro = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, total, metodo_pagamento, tipo_entrega }: { id: string; total: number; metodo_pagamento: string; tipo_entrega: string }) => {
+      const { error } = await supabase.from("pedidos").update({ total, metodo_pagamento, tipo_entrega }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["pedidos"] });
+      toast.success("Valores atualizados com sucesso!");
     },
     onError: (e: Error) => toast.error(e.message),
   });
