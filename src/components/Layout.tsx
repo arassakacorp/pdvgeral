@@ -40,7 +40,7 @@ const Layout = ({ children }: LayoutProps) => {
   if (isTargetingAdmin && !isAdmin) {
     return <div className="flex min-h-screen flex-col items-center justify-center gap-4">
       <Shield className="h-12 w-12 text-red-500" />
-      <h1 className="text-xl font-bold">Acesso Negredo</h1>
+      <h1 className="text-xl font-bold">Acesso Negado</h1>
       <p className="text-muted-foreground">Você não tem permissão para acessar esta área.</p>
       <Button onClick={() => window.location.href = "/auth"}>Ir para Login</Button>
     </div>;
