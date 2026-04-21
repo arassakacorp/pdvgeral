@@ -73,8 +73,19 @@ export const ProductsTable = ({ data, onEdit, onDelete, creators = {} }: Props) 
               {rows.map((p) => (
                 <tr key={p.id} className="border-t border-border transition-smooth hover:bg-muted/40">
                   <td className="px-4 py-3">
-                    <div className="font-medium">{p.nome}</div>
-                    <div className="text-xs text-muted-foreground">{p.categoria}</div>
+                    <div className="flex items-center gap-3">
+                      {p.imagem_url ? (
+                        <img src={p.imagem_url} alt={p.nome} className="h-10 w-10 rounded-lg object-cover shadow-sm border border-border" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center text-muted-foreground border border-border">
+                           <span className="text-[10px] uppercase font-bold">{p.categoria.slice(0, 2)}</span>
+                        </div>
+                      )}
+                      <div>
+                        <div className="font-medium">{p.nome}</div>
+                        <div className="text-xs text-muted-foreground">{p.categoria}</div>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-xs text-muted-foreground">
                     {p.created_by ? (creators[p.created_by] ?? "—") : <span className="italic">sem dono</span>}

@@ -85,41 +85,30 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b border-border/50 bg-card/40 backdrop-blur-xl sticky top-0 z-10">
-        <div className="container flex flex-wrap items-center justify-between gap-3 py-5">
+      <main className="container space-y-8 py-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary shadow-glow">
-              <Sparkles className="h-6 w-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">Painel de Vendas</h1>
-              <p className="text-xs text-muted-foreground">{user.email}</p>
-            </div>
+             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-primary shadow-glow md:hidden">
+                <Sparkles className="h-6 w-6 text-primary-foreground" />
+             </div>
+             <div>
+                <h1 className="text-2xl font-bold tracking-tight">Dashboard de Vendas</h1>
+                <p className="text-sm text-muted-foreground">Bem-vindo, {user.email}</p>
+             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <input ref={fileRef} type="file" accept=".xlsx,.xls" hidden onChange={handleImport} />
-            {isAdmin && (
-              <Button variant="outline" size="sm" onClick={() => nav("/admin")}>
-                <Shield className="mr-2 h-4 w-4" /> Admin
-              </Button>
-            )}
             <Button variant="outline" size="sm" onClick={() => fileRef.current?.click()} disabled={bulk.isPending}>
               <Upload className="mr-2 h-4 w-4" /> Importar
             </Button>
             <Button variant="outline" size="sm" onClick={() => exportToXLSX(produtos)} disabled={produtos.length === 0}>
               <Download className="mr-2 h-4 w-4" /> Exportar
             </Button>
-            <Button size="sm" onClick={onNew} className="bg-gradient-primary">
-              <Plus className="mr-2 h-4 w-4" /> Novo
-            </Button>
-            <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sair">
-              <LogOut className="h-4 w-4" />
+            <Button size="sm" onClick={onNew} className="bg-gradient-primary shadow-md">
+              <Plus className="mr-2 h-4 w-4" /> Novo Lanche
             </Button>
           </div>
         </div>
-      </header>
-
-      <main className="container space-y-8 py-8">
         <section className="space-y-4">
           <div>
             <h2 className="text-2xl font-bold tracking-tight">Visão geral</h2>
@@ -153,7 +142,14 @@ const Index = () => {
               <div className="lg:col-span-3"><TopProductsChart data={topProducts} /></div>
               <div className="lg:col-span-2"><CategoryChart data={byCategory} /></div>
             </section>
-            <section>
+            
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold tracking-tight">Seus Lanches</h2>
+                <Button onClick={onNew} size="sm" className="bg-gradient-primary shadow-md">
+                   <Plus className="mr-2 h-4 w-4" /> Novo Lanche
+                </Button>
+              </div>
               <ProductsTable data={filtered} onEdit={onEdit} onDelete={(id) => del.mutate(id)} creators={creators} />
             </section>
           </>

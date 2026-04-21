@@ -13,6 +13,7 @@ export interface ProdutoDB {
   custo_total: number;
   venda_total: number;
   lucro: number;
+  imagem_url?: string;
   created_at: string;
   updated_at: string;
 }
@@ -24,6 +25,7 @@ export interface ProdutoInput {
   qntd_comprada: number;
   valor_venda: number;
   qntd_vendida: number;
+  imagem_url?: string;
 }
 
 export const useProdutos = () => {
