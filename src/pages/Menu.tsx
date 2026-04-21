@@ -139,120 +139,150 @@ const Menu = () => {
   if (isLoading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin" /></div>;
 
   return (
-    <div className="min-h-screen bg-background pb-24 font-sans antialiased">
-      {/* Hero Section */}
-      <div className="relative h-64 md:h-80 overflow-hidden">
-        <img 
-          src="/premium_burger_hero_1776746871020.png" 
-          alt="Premium Burger" 
-          className="w-full h-full object-cover brightness-50"
-        />
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center p-6 space-y-2">
-          <div className="h-16 w-16 bg-primary rounded-2xl flex items-center justify-center shadow-glow mb-2 rotate-3 transform transition-transform hover:rotate-0">
-             <Sparkles className="text-white h-10 w-10" />
-          </div>
-          <h1 className="text-4xl font-black italic tracking-tighter uppercase">Burger <span className="text-primary underline decoration-accent">Master</span></h1>
-          <p className="text-sm font-medium opacity-90 tracking-wide">O verdadeiro sabor artesanal na sua casa</p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-[#f8f9fa] font-sans antialiased text-[#3e3e3e]">
+      {/* Topo Estilo Asgard */}
+      <header className="sticky top-0 z-50 bg-white border-b shadow-sm">
+        <div className="container max-w-6xl mx-auto px-4 h-20 flex items-center gap-8">
+          {/* Logo */}
+          <Link to="/" className="flex-shrink-0 flex items-center gap-2">
+            <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+              <span className="text-white font-black text-xl italic leading-none">N</span>
+            </div>
+            <span className="font-black text-xl tracking-tighter uppercase italic hidden sm:block">
+              Nano <span className="text-primary">Banana</span>
+            </span>
+          </Link>
 
-      {/* Header Sticky com Busca */}
-      <header className="bg-background/80 backdrop-blur-md border-b sticky top-0 z-20 shadow-sm">
-        <div className="container max-w-2xl px-4 py-4 space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
-              <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50">Aberto Agora</Badge>
-              <span>• 30-45 min</span>
-            </div>
-            <div className="flex items-center gap-1 text-primary">
-              <MapPin className="h-4 w-4" />
-              <span className="text-xs font-bold">Taxa Grátis</span>
-            </div>
-          </div>
-          <div className="relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground transition-colors group-focus-within:text-primary" />
+          {/* Busca Centralizada */}
+          <div className="flex-1 relative group max-w-xl mx-auto">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <Input 
-              placeholder="Encontre seu lanche favorito..." 
-              className="pl-12 h-14 rounded-2xl bg-muted/50 border-none focus-visible:ring-2 focus-visible:ring-primary shadow-inner text-lg"
+              placeholder="O que você quer comer hoje?" 
+              className="w-full h-12 pl-12 pr-4 rounded-xl bg-[#f2f2f2] border-none focus-visible:ring-2 focus-visible:ring-primary shadow-inner transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+
+          {/* User / Address */}
+          <div className="hidden lg:flex items-center gap-4 text-sm font-medium">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-widest">Entregar em</span>
+              <span className="flex items-center gap-1 text-primary">
+                <MapPin className="h-4 w-4" /> Centro, Cidade
+              </span>
+            </div>
+            <div className="h-10 w-[1px] bg-border" />
+            <Button variant="ghost" className="font-bold hover:text-primary">Entrar</Button>
+          </div>
         </div>
       </header>
 
-      {/* Navegação de Categorias Sticky */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-md border-b">
-        <div className="container max-w-2xl px-4 py-3">
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+      <div className="container max-w-6xl mx-auto px-4 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar de Categorias (Desktop) */}
+          <aside className="hidden lg:block w-64 space-y-2 sticky top-28 h-fit">
+            <h4 className="px-4 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-4">Categorias</h4>
             {["Burgers", "Combos", "Acompanhamentos", "Bebidas", "Sobremesas"].map((cat) => (
-              <Button 
+              <button 
                 key={cat}
-                variant="ghost" 
-                className="whitespace-nowrap rounded-full font-bold text-sm uppercase tracking-tighter hover:text-primary transition-all active:scale-95"
+                className="w-full text-left px-4 py-3 rounded-xl font-bold text-sm hover:bg-white hover:text-primary hover:shadow-sm transition-all border border-transparent hover:border-border"
               >
                 {cat}
-              </Button>
+              </button>
             ))}
-          </div>
+          </aside>
+
+          {/* Conteúdo Principal */}
+          <main className="flex-1 space-y-12 pb-20">
+            {/* Banner Promocional */}
+            <div className="relative h-48 md:h-64 rounded-[2rem] overflow-hidden shadow-elegant group">
+               <img 
+                src="/premium_burger_hero_1776746871020.png" 
+                alt="Promo" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center px-12 text-white">
+                 <Badge className="w-fit mb-4 bg-primary text-white border-none font-black italic tracking-tighter uppercase">Promoção do Dia</Badge>
+                 <h2 className="text-3xl md:text-5xl font-black italic uppercase leading-none tracking-tighter">Compre 1 <br />Leve <span className="text-primary">2</span></h2>
+              </div>
+            </div>
+
+            {/* Listagem por Categoria */}
+            <section className="space-y-6">
+               <div className="flex items-center justify-between border-b pb-4">
+                  <h3 className="text-2xl font-black italic uppercase tracking-tighter">Burgers <span className="text-primary">Artesanais</span></h3>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest">{filteredProdutos.length} itens</span>
+               </div>
+               
+               <div className="grid gap-4">
+                  {filteredProdutos.map((p) => (
+                    <div 
+                      key={p.id} 
+                      className="bg-white p-4 rounded-2xl border border-transparent hover:border-primary/20 hover:shadow-elegant transition-all duration-300 flex items-center gap-6 cursor-pointer group"
+                      onClick={() => addToCart(p)}
+                    >
+                      <div className="flex-1 space-y-2">
+                        <div>
+                          <h4 className="font-black text-xl text-[#3e3e3e] uppercase tracking-tighter group-hover:text-primary transition-colors leading-none">{p.nome}</h4>
+                          <p className="text-sm text-muted-foreground mt-2 font-medium line-clamp-2 leading-relaxed">{p.categoria}</p>
+                        </div>
+                        <div className="flex items-center gap-4 pt-2">
+                          <span className="text-2xl font-black text-primary tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
+                          {Number(p.valor_venda) < 25 && (
+                             <Badge variant="outline" className="text-[10px] border-primary text-primary font-bold uppercase tracking-widest">Econômico</Badge>
+                          )}
+                        </div>
+                      </div>
+                      <div className="relative h-32 w-32 md:h-40 md:w-40 flex-shrink-0">
+                        {p.imagem_url ? (
+                          <img 
+                            src={p.imagem_url} 
+                            alt={p.nome} 
+                            className="h-full w-full object-cover rounded-2xl shadow-sm group-hover:scale-105 transition-transform" 
+                          />
+                        ) : (
+                          <div className="h-full w-full bg-[#f2f2f2] rounded-2xl flex items-center justify-center text-muted-foreground border border-dashed">
+                            <ShoppingBag className="opacity-20 h-10 w-10" />
+                          </div>
+                        )}
+                        <div className="absolute bottom-2 right-2 h-10 w-10 bg-primary text-white rounded-xl flex items-center justify-center shadow-glow transform transition-all hover:scale-110 active:scale-95 group-hover:rotate-12">
+                          <Plus className="h-6 w-6 font-bold" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+               </div>
+            </section>
+          </main>
         </div>
       </div>
 
-      {/* Lista de Produtos (Estilo iFood/Asgard) */}
-      <main className="container max-w-2xl px-4 py-8 space-y-12">
-        <section className="space-y-6">
-          <h2 className="text-2xl font-black italic uppercase tracking-tighter border-l-4 border-primary pl-4">Nossos Burgers</h2>
-          <div className="grid gap-2">
-            {filteredProdutos.map((p) => (
-              <div 
-                key={p.id} 
-                className="flex items-center gap-4 p-4 rounded-2xl hover:bg-muted/50 transition-all cursor-pointer group border-b border-border/50 last:border-0"
-                onClick={() => addToCart(p)}
-              >
-                <div className="flex-1 space-y-1">
-                  <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors uppercase tracking-tight">{p.nome}</h3>
-                  <p className="text-sm text-muted-foreground line-clamp-2 font-medium leading-snug">{p.categoria}</p>
-                  <div className="pt-2">
-                    <span className="text-xl font-black text-primary tracking-tighter">{fmtBRL(Number(p.valor_venda))}</span>
-                  </div>
-                </div>
-                <div className="relative h-24 w-24 flex-shrink-0">
-                  {p.imagem_url ? (
-                    <img 
-                      src={p.imagem_url} 
-                      alt={p.nome} 
-                      className="h-full w-full object-cover rounded-xl shadow-md group-hover:scale-105 transition-transform" 
-                    />
-                  ) : (
-                    <div className="h-full w-full bg-muted rounded-xl flex items-center justify-center text-muted-foreground border">
-                      <ShoppingBag className="h-8 w-8 opacity-20" />
-                    </div>
-                  )}
-                  <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-primary text-white rounded-lg flex items-center justify-center shadow-glow group-active:scale-90 transition-all">
-                    <Plus className="h-5 w-5 font-bold" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </main>
-
-      {/* Carrinho Flutuante (Estilo App) */}
+      {/* Carrinho Flutuante (Fiel ao Asgard/iFood) */}
       {cart.length > 0 && (
-        <div className="fixed bottom-6 left-0 right-0 z-40 px-4 animate-in slide-in-from-bottom-10 duration-300">
-          <Button 
-            className="w-full max-w-2xl mx-auto h-16 rounded-2xl shadow-glow-lg flex items-center justify-between px-8 bg-primary hover:bg-primary/90 transition-all active:scale-95"
-            onClick={() => setCheckoutOpen(true)}
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-8 w-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <span className="font-black">{cart.length}</span>
-              </div>
-              <span className="font-black uppercase tracking-tighter">Ver Carrinho</span>
-            </div>
-            <span className="text-xl font-black tracking-tighter">{fmtBRL(cartTotal)}</span>
-          </Button>
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom-full duration-500">
+          <div className="container max-w-6xl mx-auto flex items-center justify-between">
+             <div className="hidden md:flex items-center gap-6">
+                <div className="flex -space-x-2">
+                   {cart.slice(0, 3).map((item, i) => (
+                      <div key={i} className="h-10 w-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] font-bold overflow-hidden shadow-sm">
+                         <ShoppingBag className="h-4 w-4 text-slate-400" />
+                      </div>
+                   ))}
+                </div>
+                <div className="space-y-0.5">
+                   <p className="font-bold text-sm">{cart.length} itens no carrinho</p>
+                   <p className="text-xs text-muted-foreground">Adicione mais itens para entrega grátis</p>
+                </div>
+             </div>
+             <Button 
+                className="w-full md:w-fit h-14 px-12 rounded-xl bg-primary hover:bg-primary/90 text-white shadow-glow flex items-center justify-between md:justify-center gap-8 group"
+                onClick={() => setCheckoutOpen(true)}
+             >
+                <span className="font-black text-xl uppercase tracking-tighter italic">Fechar Pedido</span>
+                <span className="text-2xl font-black tracking-tighter border-l border-white/20 pl-6">{fmtBRL(cartTotal)}</span>
+             </Button>
+          </div>
         </div>
       )}
 
